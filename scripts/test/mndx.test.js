@@ -72,6 +72,14 @@ test('.mndx state can never be edited by tools or the shell', () => {
   assert.equal(gate(dir, 'Bash', { command: 'echo {} > .mndx/state.json' }).allowed, false);
   assert.equal(gate(dir, 'Bash', { command: `node "${SCRIPTS}/mndx.js" status` }).allowed, true);
   assert.equal(gate(dir, 'Bash', { command: 'npm test' }).allowed, true);
+  assert.equal(gate(dir, 'Bash', { command: 'git add src .mndx/state.json' }).allowed, true, 'ship commits the state');
+  assert.equal(gate(dir, 'Bash', { command: 'git checkout -- .mndx/state.json' }).allowed, false);
+
+  // Session outside any MNDX project, command cd's into one: still blocked.
+  const outside = tmpProject({ mndx: false });
+  const res = run('gate.js', [], { cwd: outside, stdin: JSON.stringify({ hook_event_name: 'PreToolUse', cwd: outside,
+    tool_name: 'PowerShell', tool_input: { command: `Set-Location '${dir}'; Set-Content .mndx/state.json '{}'` } }) });
+  assert.equal(JSON.parse(res.out).hookSpecificOutput.permissionDecision, 'deny');
 });
 
 test('Claude cannot invoke the user-only commands through the Skill tool', () => {

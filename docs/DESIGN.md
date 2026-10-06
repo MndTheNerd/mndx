@@ -144,10 +144,10 @@ The bar is defined once in `CLAUDE.md` by `/mndx:init` and enforced at `/mndx:ve
 ## 9. Install & use
 
 ```
-/plugin marketplace add D:\localAi\MNDX
-/plugin install mndx@mndx
+claude plugin marketplace add MndTheNerd/mndx      # or a local folder path
+claude plugin install mndx@mndx
 ```
-Then in any project: `/mndx:init` → `/mndx:spec "..."` → `/mndx:approve` → `/mndx:plan` → `/mndx:approve` → `/mndx:build` → `/mndx:verify` → `/mndx:ship`.
+(Full steps: [GETTING-STARTED.md](GETTING-STARTED.md).) Then in any project: `/mndx:init` → `/mndx:spec "..."` → `/mndx:approve` → `/mndx:plan` → `/mndx:approve` → `/mndx:build` → `/mndx:verify` → `/mndx:ship`.
 
 ## 10. Build plan for MNDX itself
 

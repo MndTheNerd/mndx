@@ -46,11 +46,13 @@ function checkEdit(input) {
   if (!gate.open) deny(`cannot edit ${rel.split(path.sep).join('/')}. ${gate.reason} ${gate.next}`);
 }
 
+// Any shell command naming .mndx/ is blocked, wherever it runs (a `cd` inside the command can reach a
+// project the session isn't in). Exceptions: the MNDX CLI itself, and git, which ship uses to commit the state.
 function checkBash(input) {
   const command = (input.tool_input && input.tool_input.command) || '';
-  if (!/\.mndx[\\/]/.test(command) || /mndx\.js/.test(command)) return;
-  if (!lib.findRoot(input.cwd || process.cwd())) return;
-  deny('do not touch .mndx/ from the shell. Use the mndx.js CLI.');
+  if (!/\.mndx[\\/]/.test(command)) return;
+  if (/mndx\.js/.test(command) || /^\s*git\s+(add|commit|status|diff|log|show)\b/.test(command)) return;
+  deny('do not touch .mndx/ from the shell. Read state with `mndx.js status --json`; change it with the mndx.js CLI.');
 }
 
 function checkSkill(input) {
