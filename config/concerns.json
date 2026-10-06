@@ -1,0 +1,160 @@
+{
+  "$comment": "Production concerns the MNDX router checks every task against. `triggers` are hints for the deterministic first pass (`mndx.js route`); Claude's judgment adds or drops concerns from there. `implies` pulls in related concerns (accounts mean personal data, so privacy). `always` concerns apply to every item (`ui` ones to any item with a user interface). `checklist` is an MNDX file in skills/concerns/. `skills` are community skills from config/skills.json (or Claude Code built-ins listed in `builtinSkills`).",
+  "builtinSkills": ["claude-api"],
+  "concerns": [
+    {
+      "id": "testing",
+      "title": "Testing",
+      "always": true,
+      "triggers": ["test", "tests", "e2e", "coverage", "flaky", "regression"],
+      "checklist": "testing.md",
+      "skills": ["tdd", "property-based-testing", "playwright-best-practices"]
+    },
+    {
+      "id": "security",
+      "title": "Security",
+      "always": true,
+      "triggers": ["secure", "security", "secret", "token", "encrypt", "upload", "uploads", "attachment", "attachments", "admin", "xss", "csrf", "injection", "permission", "vulnerability"],
+      "checklist": "security.md",
+      "skills": ["security-and-hardening", "sharp-edges", "semgrep", "secret-serialization"]
+    },
+    {
+      "id": "ux",
+      "title": "Product & UX design",
+      "always": "ui",
+      "triggers": ["ui", "ux", "screen", "page", "design", "layout", "onboarding", "dashboard", "landing", "theme", "dark mode", "brand"],
+      "checklist": "ux.md",
+      "skills": ["frontend-design", "web-design-guidelines", "expo-design-system"]
+    },
+    {
+      "id": "accessibility",
+      "title": "Accessibility",
+      "always": "ui",
+      "triggers": ["accessible", "accessibility", "a11y", "wcag", "screen reader", "keyboard", "contrast", "ada", "eaa"],
+      "checklist": "accessibility.md",
+      "skills": ["accessibility", "web-design-guidelines"]
+    },
+    {
+      "id": "frontend-web",
+      "title": "Web frontend",
+      "triggers": ["web", "website", "web app", "react", "next", "nextjs", "browser", "component", "form", "css", "tailwind", "spa", "pwa"],
+      "implies": ["ux", "accessibility"],
+      "checklist": null,
+      "skills": ["frontend-ui-engineering", "vercel-react-best-practices", "playwright-cli"]
+    },
+    {
+      "id": "mobile",
+      "title": "Mobile app",
+      "triggers": ["mobile", "ios", "android", "iphone", "expo", "react native", "native app", "tablet", "push notification", "deep link", "offline"],
+      "implies": ["ux", "accessibility"],
+      "checklist": null,
+      "skills": ["expo-overview", "vercel-react-native-skills", "expo-router", "expo-native-ui", "expo-data-fetching"]
+    },
+    {
+      "id": "api",
+      "title": "Backend & API",
+      "triggers": ["api", "endpoint", "backend", "server", "rest", "graphql", "webhook", "cli", "microservice", "rate limit", "integration", "sdk"],
+      "checklist": null,
+      "skills": ["api-and-interface-design", "fastify-best-practices", "node"]
+    },
+    {
+      "id": "data",
+      "title": "Data & database",
+      "triggers": ["database", "db", "table", "schema", "migration", "sql", "postgres", "query", "index", "persist", "import", "export", "csv", "report"],
+      "implies": ["security"],
+      "checklist": "data.md",
+      "skills": ["supabase-postgres-best-practices", "domain-modeling"]
+    },
+    {
+      "id": "auth",
+      "title": "Identity & access",
+      "triggers": ["login", "log in", "sign in", "signup", "sign up", "register", "auth", "authentication", "password", "session", "oauth", "sso", "google login", "apple login", "magic link", "2fa", "mfa", "role", "roles", "team", "invite"],
+      "implies": ["privacy", "security"],
+      "checklist": "auth.md",
+      "skills": ["better-auth-best-practices", "better-auth-security-best-practices"]
+    },
+    {
+      "id": "privacy",
+      "title": "Privacy, compliance & legal",
+      "triggers": ["personal data", "user data", "pii", "email address", "phone number", "location", "gdpr", "ccpa", "privacy", "cookie", "consent", "analytics", "tracking", "children", "kids", "minor", "health", "medical", "biometric", "delete account", "data export", "terms", "policy", "legal", "eu", "europe", "california", "user generated", "comments", "reviews", "moderation", "kyc", "delete their account", "delete my account", "account deletion", "personal information"],
+      "checklist": "privacy-compliance.md",
+      "skills": []
+    },
+    {
+      "id": "payments",
+      "title": "Payments & billing",
+      "triggers": ["pay", "payment", "payments", "checkout", "subscription", "subscriptions", "billing", "invoice", "stripe", "refund", "price", "pricing", "paywall", "purchase", "in-app purchase", "iap", "tax", "vat", "wallet", "payout", "marketplace", "donation", "credit card", "knet", "tap payments"],
+      "implies": ["security", "privacy", "messaging"],
+      "checklist": "payments.md",
+      "skills": ["stripe-best-practices", "property-based-testing"]
+    },
+    {
+      "id": "performance",
+      "title": "Performance & scale",
+      "triggers": ["fast", "slow", "performance", "speed", "latency", "cache", "caching", "scale", "scaling", "thousands", "millions", "realtime", "real-time", "lighthouse", "core web vitals"],
+      "checklist": null,
+      "skills": ["performance-optimization", "core-web-vitals", "vercel-react-best-practices"]
+    },
+    {
+      "id": "seo",
+      "title": "SEO & discoverability",
+      "triggers": ["seo", "search engine", "google search", "landing page", "marketing", "blog", "public page", "social", "open graph", "sitemap", "indexing"],
+      "checklist": null,
+      "skills": ["seo", "web-quality-audit"]
+    },
+    {
+      "id": "i18n",
+      "title": "Internationalization",
+      "triggers": ["language", "languages", "translate", "translation", "locale", "localization", "i18n", "arabic", "rtl", "multilingual", "currency", "currencies", "timezone", "time zone", "country", "countries", "date format"],
+      "checklist": "i18n.md",
+      "skills": []
+    },
+    {
+      "id": "messaging",
+      "title": "Email, SMS & notifications",
+      "triggers": ["email", "emails", "sms", "otp", "notification", "notifications", "notify", "newsletter", "reminder", "whatsapp", "digest", "mailing"],
+      "implies": ["privacy"],
+      "checklist": "messaging.md",
+      "skills": []
+    },
+    {
+      "id": "ai",
+      "title": "AI / LLM features",
+      "triggers": ["ai", "llm", "gpt", "claude", "chatbot", "assistant", "agent", "prompt", "embedding", "embeddings", "rag", "summarize", "classify", "openai", "anthropic"],
+      "implies": ["privacy", "security"],
+      "checklist": "ai.md",
+      "skills": ["claude-api"]
+    },
+    {
+      "id": "observability",
+      "title": "Observability",
+      "triggers": ["log", "logs", "logging", "monitor", "monitoring", "metrics", "alert", "alerts", "error tracking", "sentry", "trace", "tracing", "audit log", "uptime", "health check"],
+      "checklist": null,
+      "skills": ["observability-and-instrumentation", "secret-serialization"]
+    },
+    {
+      "id": "devops",
+      "title": "CI/CD & release",
+      "triggers": ["ci", "cd", "pipeline", "github actions", "workflow", "deploy", "deployment", "release", "staging", "production", "preview", "docker", "container", "environment", "rollback"],
+      "implies": ["security"],
+      "checklist": "devops.md",
+      "skills": ["ci-cd-and-automation", "gha-security-review", "shipping-and-launch"]
+    },
+    {
+      "id": "infra",
+      "title": "Infrastructure & hosting",
+      "triggers": ["hosting", "cloud", "aws", "gcp", "azure", "vercel", "cloudflare", "railway", "fly", "vps", "domain", "dns", "cdn", "ssl", "backup", "backups", "queue", "cron", "jobs", "worker", "storage", "bucket", "s3", "photo", "photos", "image", "images", "video", "videos", "avatar", "file", "files", "terraform", "kubernetes", "cost"],
+      "implies": ["security"],
+      "checklist": "infra.md",
+      "skills": ["shipping-and-launch"]
+    },
+    {
+      "id": "app-store",
+      "title": "App store release & policies",
+      "triggers": ["app store", "play store", "google play", "testflight", "publish app", "store listing", "app review", "in-app purchase", "iap", "eas submit"],
+      "implies": ["privacy", "mobile"],
+      "checklist": "app-store.md",
+      "skills": ["apple-appstore-reviewer", "expo-overview"]
+    }
+  ]
+}

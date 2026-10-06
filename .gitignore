@@ -1,0 +1,5 @@
+node_modules/
+.scratch/
+*.tmp
+.DS_Store
+Thumbs.db

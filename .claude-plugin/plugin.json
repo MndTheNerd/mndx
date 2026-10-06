@@ -1,0 +1,9 @@
+{
+  "name": "mndx",
+  "displayName": "MNDX",
+  "version": "0.1.0",
+  "description": "Solo product-grade pipeline for Claude Code: Spec → Plan → Build → Verify → Ship, with a hard approval gate and an unattended autopilot mode.",
+  "author": { "name": "mnd", "email": "mndthenerd@gmail.com" },
+  "license": "MIT",
+  "keywords": ["workflow", "spec-driven", "quality", "solo", "autopilot"]
+}

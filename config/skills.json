@@ -1,0 +1,56 @@
+{
+  "$comment": "Community skills MNDX installs from the open skills ecosystem (https://skills.sh) via `npx skills`, globally for Claude Code. Chosen per production concern for fit, install count and publisher trust, and read before inclusion (reviewed 2026-10-07). Which concerns use which skills: config/concerns.json. MNDX rules always override these skills (no push/deploy/commit/approval outside the pipeline). Install/update: /mndx:skills.",
+  "skills": [
+    { "name": "find-skills", "repo": "vercel-labs/skills", "group": "core", "use": "Find a well-ranked skill for a concern none of these cover." },
+    { "name": "grilling", "repo": "mattpocock/skills", "group": "core", "use": "Requirements interview in rounds, with a recommended answer for each question." },
+    { "name": "domain-modeling", "repo": "mattpocock/skills", "group": "core", "use": "Turn fuzzy terms into GLOSSARY.md and record decisions as ADRs." },
+    { "name": "codebase-design", "repo": "mattpocock/skills", "group": "core", "use": "Deep-module vocabulary for interfaces and seams." },
+    { "name": "tdd", "repo": "mattpocock/skills", "group": "core", "use": "Red-green vertical slices at the seams agreed in the approved test plan." },
+    { "name": "diagnosing-bugs", "repo": "mattpocock/skills", "group": "core", "use": "Red-capable feedback loop → reproduce → hypothesize → prove the root cause." },
+    { "name": "improve-codebase-architecture", "repo": "mattpocock/skills", "group": "core", "use": "User-run architecture audit of an existing codebase." },
+    { "name": "api-and-interface-design", "repo": "addyosmani/agent-skills", "group": "core", "use": "Contract-first API and module interface design." },
+    { "name": "performance-optimization", "repo": "addyosmani/agent-skills", "group": "core", "use": "Measure-first performance work across the stack." },
+    { "name": "property-based-testing", "repo": "trailofbits/skills", "group": "core", "use": "Property tests for parsers, money math, serialization and invariants." },
+
+    { "name": "security-and-hardening", "repo": "addyosmani/agent-skills", "group": "security", "use": "OWASP-oriented hardening: input, auth, secrets, headers, dependencies." },
+    { "name": "sharp-edges", "repo": "trailofbits/skills", "group": "security", "use": "Spot footgun APIs, dangerous defaults and misuse-prone designs." },
+    { "name": "semgrep", "repo": "trailofbits/skills", "group": "security", "use": "Static analysis scan during verify." },
+    { "name": "secret-serialization", "repo": "getsentry/skills", "group": "security", "use": "Catch secrets leaking through logs, repr/JSON, traces and error reports." },
+    { "name": "gha-security-review", "repo": "getsentry/skills", "group": "security", "use": "Review GitHub Actions workflows for injection and supply-chain attacks." },
+    { "name": "better-auth-best-practices", "repo": "better-auth/skills", "group": "security", "use": "Better Auth setup: sessions, providers, plugins." },
+    { "name": "better-auth-security-best-practices", "repo": "better-auth/skills", "group": "security", "use": "Auth security: rate limits, CSRF, cookies, 2FA, account takeover." },
+
+    { "name": "stripe-best-practices", "repo": "stripe/ai", "group": "payments", "use": "Official Stripe integration practices: Checkout, webhooks, subscriptions, Connect." },
+
+    { "name": "ci-cd-and-automation", "repo": "addyosmani/agent-skills", "group": "ops", "use": "CI pipelines, quality gates, release automation." },
+    { "name": "observability-and-instrumentation", "repo": "addyosmani/agent-skills", "group": "ops", "use": "Structured logs, metrics, traces, error tracking, alerts." },
+    { "name": "shipping-and-launch", "repo": "addyosmani/agent-skills", "group": "ops", "use": "Launch readiness: checklists, rollout, rollback plans." },
+
+    { "name": "frontend-design", "repo": "anthropics/skills", "group": "web", "use": "A distinctive, intentional visual design instead of templated defaults." },
+    { "name": "frontend-ui-engineering", "repo": "addyosmani/agent-skills", "group": "web", "use": "Production UI engineering: components, state, forms, responsive." },
+    { "name": "vercel-react-best-practices", "repo": "vercel-labs/agent-skills", "group": "web", "use": "React/Next.js performance rules from Vercel." },
+    { "name": "web-design-guidelines", "repo": "vercel-labs/agent-skills", "group": "web", "use": "Review UI code against the Web Interface Guidelines." },
+    { "name": "accessibility", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "WCAG 2.2 audit and fixes." },
+    { "name": "core-web-vitals", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "LCP / INP / CLS diagnosis and fixes." },
+    { "name": "seo", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "Technical SEO: metadata, structured data, sitemaps, crawlability." },
+    { "name": "web-quality-audit", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "Lighthouse-style overall audit before launch." },
+    { "name": "playwright-cli", "repo": "microsoft/playwright-cli", "group": "web", "use": "Drive the running app in a real browser to check flows and reproduce UI bugs." },
+    { "name": "playwright-best-practices", "repo": "currents-dev/playwright-best-practices-skill", "group": "web", "use": "Reliable Playwright e2e/API/visual tests, flake-free." },
+
+    { "name": "vercel-react-native-skills", "repo": "vercel-labs/agent-skills", "group": "mobile", "use": "React Native/Expo performance, lists, animation, native modules." },
+    { "name": "expo-overview", "repo": "expo/skills", "group": "mobile", "use": "Official Expo entry point that routes to the right expo-* skill." },
+    { "name": "expo-project-structure", "repo": "expo/skills", "group": "mobile", "use": "Official Expo project layout." },
+    { "name": "expo-router", "repo": "expo/skills", "group": "mobile", "use": "expo-router navigation." },
+    { "name": "expo-native-ui", "repo": "expo/skills", "group": "mobile", "use": "Native-feeling UI with Expo." },
+    { "name": "expo-ui", "repo": "expo/skills", "group": "mobile", "use": "@expo/ui native components." },
+    { "name": "expo-design-system", "repo": "expo/skills", "group": "mobile", "use": "Theming and design tokens in Expo apps." },
+    { "name": "expo-data-fetching", "repo": "expo/skills", "group": "mobile", "use": "Data fetching, caching and offline in Expo." },
+    { "name": "expo-dev-client", "repo": "expo/skills", "group": "mobile", "use": "Development builds when Expo Go isn't enough." },
+    { "name": "expo-upgrade", "repo": "expo/skills", "group": "mobile", "use": "Expo SDK upgrades." },
+    { "name": "apple-appstore-reviewer", "repo": "github/awesome-copilot", "group": "mobile", "use": "Audit for App Store rejection risks before release." },
+
+    { "name": "supabase-postgres-best-practices", "repo": "supabase/agent-skills", "group": "backend", "use": "Postgres schema, migrations, indexes, RLS, query performance." },
+    { "name": "fastify-best-practices", "repo": "mcollina/skills", "group": "backend", "use": "Fastify APIs, from its lead maintainer." },
+    { "name": "node", "repo": "mcollina/skills", "group": "backend", "use": "Node.js + TypeScript: async, errors, streams, testing, shutdown." }
+  ]
+}

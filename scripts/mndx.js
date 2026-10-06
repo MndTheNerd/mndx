@@ -1,0 +1,170 @@
+#!/usr/bin/env node
+'use strict';
+// MNDX CLI. Claude runs this through Bash to manage work items; it can never grant approvals
+// itself except under an autopilot grant that a user-typed /mndx:autopilot created.
+
+const path = require('path');
+const lib = require('./lib');
+const skills = require('./skills');
+const route = require('./route');
+
+const USAGE = `Usage: node mndx.js <command> [args]
+
+  init                      Create .mndx/state.json in the current directory
+  status [--json]           Show the active item, approvals, gate and autopilot state
+  new <feature|fix|chore> <title...>
+                            Start a work item (copies doc templates, makes it active)
+  stage <build|verify|ship> Move the active item forward (only once its docs are approved)
+  done [note...]            Close the active item as shipped (must be at stage "ship")
+  abandon [reason...]       Close the active item without shipping (docs are kept)
+  approve [doc]             Autopilot only: approve the next doc after review
+  autopilot-end <completed|stopped> [note...]
+                            End the autopilot grant
+  route "<task>" [--ui] [--json]
+                            Map a plain-language task to production concerns, checklists and skills
+  skills [list]             Show recommended community skills and which are installed
+  skills install [core|web|mobile|backend|all]
+                            Install them globally via npx skills (default: all)
+  skills update             Update all globally installed skills (npx skills update)
+`;
+
+function requireRoot() {
+  const root = lib.findRoot(process.cwd());
+  if (!root) throw new lib.MndxError('Not an MNDX project (no .mndx/state.json here or above). Run /mndx:init.');
+  return root;
+}
+
+function describe(root, state) {
+  const lines = [];
+  lines.push(`MNDX project: ${root}`);
+  if (state.autopilot && state.autopilot.active) {
+    lines.push(`Autopilot: ON since ${state.autopilot.grantedAt} — goal: ${state.autopilot.goal || '(continue active item)'}`);
+  }
+  const item = state.active;
+  if (!item) {
+    lines.push('Active item: none');
+  } else {
+    lines.push(`Active item: ${item.id} (${item.kind}) — "${item.title}"`);
+    lines.push(`Folder: ${item.dir}`);
+    lines.push(`Stage: ${item.stage}`);
+    for (const s of lib.approvalStatus(root, item)) {
+      const a = item.approvals && item.approvals[s.doc];
+      lines.push(`  ${s.doc}.md: ${s.state}${a && s.state === 'approved' ? ` (by ${a.by}, ${a.at.slice(0, 10)})` : ''}`);
+    }
+  }
+  const gate = lib.gateStatus(root, state);
+  lines.push(`Code gate: ${gate.open ? 'OPEN' : 'CLOSED'} — ${gate.reason}${gate.next ? ' ' + gate.next : ''}`);
+  const recent = state.history.slice(-5).reverse();
+  if (recent.length) {
+    lines.push('Recent:');
+    for (const h of recent) lines.push(`  ${h.at.slice(0, 10)} ${h.outcome.padEnd(9)} ${h.id}`);
+  }
+  return lines.join('\n');
+}
+
+function main(argv) {
+  const [command, ...rest] = argv;
+  switch (command) {
+    case 'init': {
+      const root = lib.findRoot(process.cwd());
+      if (root) return `Already an MNDX project: ${root}`;
+      lib.initState(process.cwd());
+      return `Initialized MNDX state in ${path.join(process.cwd(), lib.STATE_DIR)}`;
+    }
+    case 'status': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      if (rest.includes('--json')) {
+        return JSON.stringify({ root, ...state, gate: lib.gateStatus(root, state),
+          docs: state.active ? lib.approvalStatus(root, state.active) : [] }, null, 2);
+      }
+      return describe(root, state);
+    }
+    case 'new': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      const [kind, ...title] = rest;
+      const item = lib.newItem(root, state, kind, title.join(' '));
+      const docs = lib.KINDS[kind].templates.map((t) => `${item.dir}/${t}`);
+      return `Started ${item.id} (${kind}${item.autopilot ? ', autopilot' : ''}).\nDocs to fill in:\n  ${docs.join('\n  ')}`;
+    }
+    case 'stage': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      lib.setStage(root, state, rest[0]);
+      return `${state.active.id} is now at stage: ${rest[0]}`;
+    }
+    case 'done': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      if (!state.active) throw new lib.MndxError('No active MNDX work item.');
+      if (state.active.stage !== 'ship') {
+        throw new lib.MndxError(`${state.active.id} is at stage "${state.active.stage}". Verify it, then run: stage ship.`);
+      }
+      const gate = lib.gateStatus(root, state);
+      if (!gate.open) throw new lib.MndxError(`${gate.reason} ${gate.next}`);
+      const item = lib.closeItem(root, state, 'shipped', rest.join(' '));
+      return `Shipped ${item.id}. Code gate is closed until the next item is approved.`;
+    }
+    case 'abandon': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      const item = lib.closeItem(root, state, 'abandoned', rest.join(' '));
+      return `Abandoned ${item.id}. Its docs stay in ${item.dir}.`;
+    }
+    case 'approve': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      if (!(state.autopilot && state.autopilot.active)) {
+        throw new lib.MndxError('Only the user can approve outside autopilot. Ask them to type /mndx:approve.');
+      }
+      return lib.approve(root, state, { doc: rest[0], by: 'autopilot' });
+    }
+    case 'autopilot-end': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      const [outcome, ...note] = rest;
+      if (!['completed', 'stopped'].includes(outcome)) throw new lib.MndxError('Outcome must be "completed" or "stopped".');
+      if (!(state.autopilot && state.autopilot.active)) return 'Autopilot is not active.';
+      state.history.push({ id: 'autopilot', kind: 'autopilot', title: state.autopilot.goal, outcome,
+        note: note.join(' ') || undefined, at: new Date().toISOString() });
+      state.autopilot = null;
+      if (state.active) state.active.autopilot = false;
+      lib.writeState(root, state);
+      return `Autopilot ended (${outcome}). Approvals are back to the user.`;
+    }
+    case 'route': {
+      const json = rest.includes('--json');
+      const ui = rest.includes('--ui');
+      const text = rest.filter((a) => a !== '--json' && a !== '--ui').join(' ');
+      if (!text.trim()) throw new lib.MndxError('Usage: mndx.js route "<task in plain language>" [--ui] [--json]');
+      const routed = route.route(text, { ui });
+      return json ? JSON.stringify(routed, null, 2) : route.format(routed);
+    }
+    case 'skills': {
+      const [sub = 'list', ...groups] = rest;
+      if (sub === 'list') return skills.list(process.cwd());
+      if (sub === 'install') return skills.install(process.cwd(), groups);
+      if (sub === 'update') return skills.update(process.cwd());
+      throw new lib.MndxError(`Unknown skills command "${sub}" (expected: list, install, update).`);
+    }
+    case undefined:
+    case 'help':
+    case '--help':
+      return USAGE;
+    default:
+      throw new lib.MndxError(`Unknown command "${command}".\n\n${USAGE}`);
+  }
+}
+
+if (require.main === module) {
+  try {
+    process.stdout.write(main(process.argv.slice(2)) + '\n');
+  } catch (err) {
+    if (!(err instanceof lib.MndxError)) throw err;
+    process.stderr.write(`mndx: ${err.message}\n`);
+    process.exit(1);
+  }
+}
+
+module.exports = { main };

@@ -1,0 +1,12 @@
+{
+  "name": "mndx",
+  "owner": { "name": "mnd" },
+  "description": "Local marketplace for the MNDX solo product-grade pipeline plugin.",
+  "plugins": [
+    {
+      "name": "mndx",
+      "source": "./",
+      "description": "Solo product-grade pipeline: Spec → Plan → Build → Verify → Ship, with a hard approval gate and autopilot."
+    }
+  ]
+}
