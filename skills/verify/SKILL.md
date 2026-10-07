@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Verify the active MNDX item against the full quality bar and its acceptance criteria, get an independent code review, fix the findings, and record everything in verify.md.
+description: Verify the active MNDX item for real. Run the quality bar through mndx.js check (recorded, not claimed), prove every acceptance criterion with a test and a live run of the app, apply the concern checklists, get an independent code review, and record it all in verify.md.
 ---
 
 # /mndx:verify
@@ -12,40 +12,68 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" status`. The gate must be open
 If it's `build`, check that every task in the plan is ticked; if not, say so and stop.
 Then run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" stage verify`.
 
-## 2. Run the quality bar
-Run **every** command from the CLAUDE.md quality-bar table (format check, lint, typecheck, full test suite,
-build). Record the real result of each, including test counts. Never write "should pass".
+## 2. Run the quality bar (for real)
+```
+node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" check
+```
+This runs every command in CLAUDE.md's Quality bar table and records the real exit codes in `.mndx/checks.json`,
+along with a fingerprint of the code. **Shipping is refused** unless that record is green, includes a Test command,
+is newer than the item's approval, and still matches the code. Any later code change means running `check` again.
+Copy the real results (test counts, too) into verify.md. Never write "should pass".
 
 ## 3. Trace the ACs
 For every AC in `spec.md` (or the regression test in `bug.md`), find the test that proves it and confirm it
-ran and passed. An AC without a test is a failure: write the test.
+ran and passed. An AC without a test is a failure: write the test, then run `check` again.
 
-## 3b. Concern checklists
+## 4. Live run (use the app like a user)
+Tests can pass while the product is broken. Start the app with CLAUDE.md's **Run (dev)** command (in the background),
+then exercise **every AC's user flow for real**:
+- **Web:** drive it in a browser (the built-in browser pane, or `playwright-cli`): click through each flow, check
+  the console for errors, and take screenshots at phone (~390 px) and desktop widths into the item's `evidence/` folder.
+- **API / backend:** real requests (curl or a script in `.scratch/`) against the running server, including one error
+  case. Paste trimmed responses.
+- **CLI:** run the real commands with real arguments, including a bad-input case.
+- **Mobile:** Expo web or a simulator/emulator if available. If none is available, record that, and what was checked instead.
+- Use the Claude Code `run` skill if the project has a launch skill.
+
+Record each flow in verify.md's **Live run** table (steps, what you observed, evidence). Then stop the app.
+Anything broken here is a FAIL even if every test passed. Fix it, add a test that catches it, and run `check` again.
+
+## 5. Concern checklists
 For **every concern in the Concerns table**, go through its checklist (`${CLAUDE_PLUGIN_ROOT}/skills/concerns/`)
 and record evidence for each item that applies. Run the concern tooling where it's installed:
 - **Security:** a `semgrep` scan, the dependency audit, and `secret-serialization` if logs/telemetry changed.
   `gha-security-review` if workflows changed.
-- **UI:** `web-design-guidelines` review, the `accessibility` audit (axe in e2e), and real screenshots of the key
-  screens at phone and desktop sizes with `playwright-cli` (web) or the simulator (mobile).
+- **UI:** `web-design-guidelines` review, the `accessibility` audit (axe in e2e), using the live-run screenshots.
 - **Web performance / SEO** (if in scope): `core-web-vitals` / `seo` / `web-quality-audit`.
 - **Mobile release** (if in scope): `apple-appstore-reviewer`.
+If a tool a concern needs isn't installed (for example the `semgrep` CLI; `mndx.js skills list` shows which ones),
+**never record that check as passed**. Record it as **open** under Manual checks with its install command, and run
+the fallback you do have (dependency audit, grep for dangerous APIs). A missing scanner never blocks PASS on its own,
+but it must be visible.
 ⚖ items that need a human decision go under Manual checks as **open**. They don't block a PASS verdict, but they
 must be listed in the ship summary (and in the autopilot report).
 
-## 4. Independent review
+## 6. Independent review
 Launch the `mndx:code-reviewer` agent. Pass it the item folder, the Concerns table, and the list of changed files
 (`git diff --name-only` plus untracked files, or the plan's Files table if there's no git).
 For each finding:
-- **blocker / major:** fix it (the gate is open), then re-run the affected checks
+- **blocker / major:** fix it (the gate is open), then run `check` again
 - **minor:** fix it, or note why not
 - **disagree:** say why, in one line
 
-## 5. Record
-Fill in the item's `verify.md`: the quality-bar table with the real results, AC→test traceability, every review
-finding with its resolution, manual checks, and any small deviations from the plan.
-**Verdict:** PASS only if every check is green and every AC is proven.
+## 7. Record
+Run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" scope`. Every file it lists was edited outside the plan's Files table
+and **must** appear under "Deviations from the plan" with a one-line reason. If any of them changed behavior or
+design, that's not a deviation: the plan needed re-approval, so stop and fix that first.
 
-## 6. Loop or finish
+Fill in the item's `verify.md`: quality bar (from `check`), AC→test traceability, **live run**, concern
+checklists, every review finding with its resolution, manual checks, and deviations from the plan.
+**Verdict:** write PASS only if the last `check` is green and current, every AC is proven by a test **and** the
+live run, and every blocker/major finding is fixed.
+
+## 8. Loop or finish
 - **FAIL:** fix, then repeat from step 2.
-- **PASS:** run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" stage ship`, show the verdict summary, and say:
-  "Ready to ship. Run `/mndx:ship`."
+- **PASS:** run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" stage ship`. It re-checks everything mechanically
+  and refuses with the exact reason if something's off. Then show the verdict summary and say: "Ready to ship.
+  Run `/mndx:ship`."

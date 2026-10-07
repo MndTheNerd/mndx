@@ -82,7 +82,8 @@ items. Quick wins are batched into one chore. If there's no quality bar (tests, 
 
 ### Keep as-is and continue
 Adopt it now. The findings stay in ASSESSMENT.md, with critical ones listed in the backlog as **accepted risk** so
-they stay visible. New work goes through `/mndx:spec`, `/mndx:fix` and `/mndx:chore` as usual, and the gate applies
+they stay visible. One exception: if the project has **no test command**, nothing can ship (MNDX's ship rules
+need a real, green test run), so "keep" begins with one small chore that adds a test runner and a smoke test. New work goes through `/mndx:spec`, `/mndx:fix` and `/mndx:chore` as usual, and the gate applies
 from here on.
 
 The choice is recorded as an ADR (`docs/adr/NNNN-adoption.md`) with its reasons and the risks you accepted.

@@ -14,8 +14,8 @@
 
     { "name": "security-and-hardening", "repo": "addyosmani/agent-skills", "group": "security", "use": "OWASP-oriented hardening: input, auth, secrets, headers, dependencies." },
     { "name": "sharp-edges", "repo": "trailofbits/skills", "group": "security", "use": "Spot footgun APIs, dangerous defaults and misuse-prone designs." },
-    { "name": "semgrep", "repo": "trailofbits/skills", "group": "security", "use": "Static analysis scan during verify." },
-    { "name": "secret-serialization", "repo": "getsentry/skills", "group": "security", "use": "Catch secrets leaking through logs, repr/JSON, traces and error reports." },
+    { "name": "semgrep", "repo": "trailofbits/skills", "group": "security", "use": "Static analysis scan during verify.",
+      "requires": { "command": "semgrep", "install": "pip install semgrep  (or: brew install semgrep)" } },    { "name": "secret-serialization", "repo": "getsentry/skills", "group": "security", "use": "Catch secrets leaking through logs, repr/JSON, traces and error reports." },
     { "name": "gha-security-review", "repo": "getsentry/skills", "group": "security", "use": "Review GitHub Actions workflows for injection and supply-chain attacks." },
     { "name": "better-auth-best-practices", "repo": "better-auth/skills", "group": "security", "use": "Better Auth setup: sessions, providers, plugins." },
     { "name": "better-auth-security-best-practices", "repo": "better-auth/skills", "group": "security", "use": "Auth security: rate limits, CSRF, cookies, 2FA, account takeover." },
@@ -34,7 +34,8 @@
     { "name": "core-web-vitals", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "LCP / INP / CLS diagnosis and fixes." },
     { "name": "seo", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "Technical SEO: metadata, structured data, sitemaps, crawlability." },
     { "name": "web-quality-audit", "repo": "addyosmani/web-quality-skills", "group": "web", "use": "Lighthouse-style overall audit before launch." },
-    { "name": "playwright-cli", "repo": "microsoft/playwright-cli", "group": "web", "use": "Drive the running app in a real browser to check flows and reproduce UI bugs." },
+    { "name": "playwright-cli", "repo": "microsoft/playwright-cli", "group": "web", "use": "Drive the running app in a real browser to check flows and reproduce UI bugs.",
+      "requires": { "command": "playwright-cli", "install": "npm install -g @playwright/cli@latest" } },
     { "name": "playwright-best-practices", "repo": "currents-dev/playwright-best-practices-skill", "group": "web", "use": "Reliable Playwright e2e/API/visual tests, flake-free." },
 
     { "name": "vercel-react-native-skills", "repo": "vercel-labs/agent-skills", "group": "mobile", "use": "React Native/Expo performance, lists, animation, native modules." },

@@ -83,6 +83,9 @@ exist yet, then:
 ### Keep as-is
 1. Leave `docs/BACKLOG.md` with any critical findings listed as "accepted risk (see ASSESSMENT #n)", so they're
    visible but not scheduled.
+   **If the project has no Test command**, say so plainly: MNDX can't ship any item until CLAUDE.md's quality bar
+   has a test command that `mndx.js check` can run. So "keep" still starts with one small chore that adds a test
+   runner and a first smoke test. Put it as backlog item 1.
 2. Tell the user MNDX is ready: new work goes through `/mndx:spec`, `/mndx:fix` and `/mndx:chore` as normal,
    and the gate applies from now on. Ask what they want to build next.
 

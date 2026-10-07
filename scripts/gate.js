@@ -63,7 +63,7 @@ function checkSkill(input) {
 }
 
 function main() {
-  const input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
+  const input = lib.readHookInput();
   try {
     if (EDIT_TOOLS.has(input.tool_name)) checkEdit(input);
     else if (input.tool_name === 'Bash' || input.tool_name === 'PowerShell') checkBash(input);

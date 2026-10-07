@@ -21,6 +21,7 @@ Every MNDX item is routed to the concerns it touches (see the `route` skill). Ea
 | Identity & access | [auth.md](auth.md) | `better-auth-best-practices`, `better-auth-security-best-practices` |
 | Privacy, compliance & legal | [privacy-compliance.md](privacy-compliance.md) | none (no trustworthy community skill) |
 | Payments & billing | [payments.md](payments.md) | `stripe-best-practices` |
+| Dates, times & scheduling | [time.md](time.md) | `property-based-testing` |
 | Internationalization | [i18n.md](i18n.md) | none |
 | Email, SMS & notifications | [messaging.md](messaging.md) | none |
 | AI / LLM features | [ai.md](ai.md) | `claude-api` |

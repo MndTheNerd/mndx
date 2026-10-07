@@ -11,7 +11,10 @@ idea ─► route ─► spec ─► ✋ you approve ─► plan ─► ✋ you 
 ```
 
 - 🛑 **Hard gate:** Claude physically can't edit code until you approve the spec and plan. Change an approved doc
-  and the gate closes again.
+  and the gate closes again. A watchdog catches code written through the shell.
+- ✅ **Verified, not claimed:** `mndx.js check` runs your real test, lint, typecheck and build commands. Shipping is
+  refused unless they're green **for the current code**, and the app was actually run and used for every acceptance
+  criterion.
 - 🧭 **Concern router:** any task written in plain language is checked against 20 production concerns (security,
   privacy & legal, payments, UX, accessibility, data, auth, i18n/RTL, devops, infra, app-store policies…). Their
   checklists and expert skills are applied all the way through.
@@ -121,10 +124,16 @@ CI runs the tests on Ubuntu and Windows (Node 20 and 24) on every push. To relea
 `.claude-plugin/plugin.json`, push, then run `claude plugin marketplace update mndx` and
 `claude plugin update mndx@mndx` on each PC. See [Customizing](docs/CUSTOMIZING.md#releasing-your-change).
 
+## Proof it works
+
+MNDX was dogfooded by building a real app (a habit tracker) end to end under autopilot. Its reviewers found
+16 major defects across spec, plan and code before anything shipped. `mndx.js check` caught a typecheck/build
+failure while all 76 tests were green. Every issue the run exposed in MNDX itself was fixed in v0.3.0
+(see the [changelog](CHANGELOG.md)).
+
 ## Limits, honestly
 
-- A deliberately disguised shell command could still write a file. The gate stops drift, not someone actively
-  trying to get around it.
+- The shell watchdog detects and reports code written through the shell, but doesn't undo it, and needs git.
 - The compliance, payments and store checklists flag what commonly applies. **They aren't legal advice.** ⚖
   items always go to a human.
 - Autopilot needs a permissive permission mode to run unattended. It never pushes, deploys or spends money.

@@ -86,8 +86,10 @@ in `plan.md`. Ticking boxes doesn't count as changing the plan. If the plan turn
 **stops and tells you**. The plan gets updated and re-approved rather than silently changed.
 
 ### `/mndx:verify`
-Runs **every** quality-bar command from your project's CLAUDE.md (format, lint, typecheck, tests, build) and
-records the real results. Then:
+Runs **every** quality-bar command from your project's CLAUDE.md through `mndx.js check`, which records the real exit
+codes and a fingerprint of the code. **Shipping is mechanically refused** unless that record is green and current.
+Then it **runs the app for real** and walks through every acceptance criterion like a user: browser for web, real
+requests for an API, real commands for a CLI. Then:
 - AC → test traceability, where every AC must have a passing test
 - concern checklists with evidence (a semgrep scan, an accessibility audit, screenshots, and so on)
 - the `code-reviewer` agent reviews the change against the spec, plan and checklists, and its findings get fixed

@@ -22,6 +22,7 @@ test('manifest entries are complete, unique and valid', () => {
     assert.ok(skills.GROUPS.includes(s.group), `${s.name}: bad group ${s.group}`);
     assert.ok(s.use && s.use.length > 10, `${s.name}: needs a "use" line`);
     assert.ok(!PLUGIN_SKILLS.includes(s.name), `${s.name} collides with an MNDX skill name`);
+    if (s.requires) assert.ok(s.requires.command && s.requires.install, `${s.name}: requires needs command + install`);
   }
   for (const g of skills.GROUPS) assert.ok(manifest.some((s) => s.group === g), `no skills in group ${g}`);
 });
@@ -108,6 +109,12 @@ test('router: plain-language tasks map to the right concerns', () => {
 
   const ai = ids('Summarize support tickets with Claude and log token usage');
   for (const c of ['ai', 'observability']) assert.ok(ai.includes(c), `ai → ${c}`);
+});
+
+test('router: date logic and local persistence are caught (dogfood findings)', () => {
+  const r = route.route("add habits, mark one done for today, show each habit's current streak, saved in the browser").map((x) => x.id);
+  assert.ok(r.includes('time'), 'today/streak → time');
+  assert.ok(r.includes('data'), 'saved → data');
 });
 
 test('router: implied concerns are pulled in with a reason', () => {

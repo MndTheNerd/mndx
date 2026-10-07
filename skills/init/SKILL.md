@@ -61,8 +61,9 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" init
 ```
 - `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" new chore "project setup"`, then fill in its
   `chore.md`: scaffolding commands, config files (strict TS / linters / formatter / test runner), folder layout,
-  a first passing smoke test, a `.gitignore` (including `.scratch/` and `.env*` except `.env.example`), and `git
-  init` if needed. Based on the product's concerns, also include: a CI workflow running the quality bar (devops),
+  a first passing smoke test, a `.gitignore` (including `.scratch/` and `.env*` except `.env.example`), a
+  `.gitattributes` with `* text=auto eol=lf` (the same line endings on every OS), and `git init` if needed.
+  Scaffold generators into `.scratch/` and copy the result in, so a generator can never touch existing docs. Based on the product's concerns, also include: a CI workflow running the quality bar (devops),
   env validation at boot plus `.env.example` (security), the i18n layer (i18n), and `docs/DESIGN-SYSTEM.md` with
   tokens wired into the styling setup (UX, via `frontend-design` / `expo-design-system`). Done when every
   quality-bar command runs green on the empty app.
