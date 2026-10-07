@@ -96,6 +96,7 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
 | [How it works](docs/HOW-IT-WORKS.md) | hooks, state, the approval hash, the CLI, tests |
 | [Troubleshooting](docs/TROUBLESHOOTING.md) | gate, approvals, autopilot, updates |
 | [Design](docs/DESIGN.md) | the approved design and its rationale |
+| [Token savings](docs/TOKEN-SAVINGS.md) | where a run's tokens go, and the proposals to cut them (proposal) |
 | [Changelog](CHANGELOG.md) | release history |
 
 ## Repository layout
