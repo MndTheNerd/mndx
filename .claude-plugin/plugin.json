@@ -1,7 +1,7 @@
 {
   "name": "mndx",
   "displayName": "MNDX",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Solo product-grade pipeline for Claude Code: Spec → Plan → Build → Verify → Ship, with a hard approval gate, a production-concern router, existing-project adoption (learn → audit → rebuild/fix/keep) and an unattended autopilot.",
   "author": { "name": "mndthenerd", "email": "mndthenerd@gmail.com", "url": "https://github.com/MndTheNerd" },
   "homepage": "https://github.com/MndTheNerd/mndx#readme",
