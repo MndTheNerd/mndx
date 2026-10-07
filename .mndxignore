@@ -1,0 +1,2 @@
+This file tells MNDX's session hook not to suggest /mndx:init here (this is the MNDX plugin's own repo).
+Put an empty .mndxignore in any folder where you don't want the suggestion.

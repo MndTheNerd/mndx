@@ -1,188 +1,134 @@
 # MNDX
 
-**A solo product team inside Claude Code.** MNDX makes every change go through
-**Spec → Plan → Build → Verify → Ship**. Code can't be written until you've approved what's being built, and
-everything that ships is typed, tested, reviewed and documented.
+**A solo product team inside Claude Code.**
 
-Inspired by [OBX](https://obx.obytes.com/) from Obytes, minus the team features. It runs entirely on your Claude
-subscription: no API keys, no servers.
+MNDX makes Claude build software the way a good product team does. Every change is understood, written down
+and approved **before** code is written, then built test-first, verified against a production-grade bar, and
+shipped with its docs.
+
+```
+idea ─► route ─► spec ─► ✋ you approve ─► plan ─► ✋ you approve ─► build ─► verify ─► ship
+```
+
+- 🛑 **Hard gate:** Claude physically can't edit code until you approve the spec and plan. Change an approved doc
+  and the gate closes again.
+- 🧭 **Concern router:** any task written in plain language is checked against 20 production concerns (security,
+  privacy & legal, payments, UX, accessibility, data, auth, i18n/RTL, devops, infra, app-store policies…). Their
+  checklists and expert skills are applied all the way through.
+- 🧰 **45 curated community skills** from [skills.sh](https://skills.sh/), from Stripe, Expo, Vercel, Anthropic,
+  Supabase, Microsoft, Sentry, Trail of Bits and others, kept current with `npx skills update`.
+- 🔍 **Independent reviewers:** fresh-context agents critique every spec and every change.
+- 🏚️ **Existing projects:** MNDX learns the whole codebase, audits it with evidence, then lets you choose to
+  **rebuild it the right way**, **fix what needs fixing**, or **keep it and continue**.
+- 🤖 **Autopilot:** `/mndx:autopilot <goal>` runs the whole pipeline unattended and ends with an honest report.
+- 💳 Runs **entirely on your Claude subscription**, inside Claude Code. No API keys, no servers.
+
+Inspired by [OBX](https://obx.obytes.com/) from Obytes, built for one person instead of a team.
+
+---
 
 ## Install
 
-From a terminal:
+You need Claude Code, Node.js 18+ and Git. Full walkthrough: **[docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)**.
 
 ```bash
-claude plugin marketplace add D:\localAi\MNDX
+claude plugin marketplace add MndTheNerd/mndx
 ```
-
 ```bash
 claude plugin install mndx@mndx
 ```
 
-Then restart Claude Code (or open a new session in the desktop app). Requires Node 18+ on your PATH.
+Then, in a Claude Code session, run `/mndx:skills install all` and start a new session.
+
+> The repo is private. On a new PC, run `gh auth login` and `gh auth setup-git` first.
 
 ## Use
 
 ```
-/mndx:init "a habit tracker for people who hate habit trackers"
-    → interview → docs/PRODUCT.md, ARCHITECTURE.md, adr/0001-stack.md, CLAUDE.md (quality bar), setup chore
-/mndx:approve          ← you, after reading chore.md
-/mndx:build            → scaffolds the project, quality bar green
-/mndx:ship             → local commit
+/mndx:init a habit tracker for people who hate habit trackers
+      → interview → PRODUCT.md, ARCHITECTURE.md, stack ADR, CLAUDE.md (quality bar), setup chore
+/mndx:approve   /mndx:build   /mndx:ship                 → scaffolded app, green quality bar, first commit
 
-/mndx:spec "streaks with a grace day"   → spec.md + independent review
+/mndx:init                       (in a folder with existing code)
+      → learns the project, runs its tests, ASSESSMENT.md → you choose: rebuild · fix · keep
+
+/mndx:spec streaks with a one-day grace period           → routed concerns + spec with numbered ACs + review
 /mndx:approve
-/mndx:plan                               → plan.md (tasks + test plan per acceptance criterion)
-/mndx:approve                            ← code gate opens
-/mndx:build                              → test-first, task by task
-/mndx:verify                             → full quality bar + AC traceability + code review → verify.md
-/mndx:ship                               → docs + changelog + local commit, gate closes
+/mndx:plan                                               → tasks, a test per AC, a proof per concern
+/mndx:approve                                            ← code gate opens
+/mndx:build                                              → test-first, task by task
+/mndx:verify                                             → quality bar, AC→test proof, checklists, code review
+/mndx:ship                                               → docs + changelog + local commit, gate closes
 ```
 
 | Command | What it does |
 |---|---|
-| `/mndx:init [idea]` | Set up a new or existing project |
-| `/mndx:spec <idea>` | Start a feature: spec with numbered, testable acceptance criteria |
+| `/mndx:init [idea]` | New project: interview → docs → setup chore. Existing code: learn → audit → rebuild / fix / keep |
+| `/mndx:assess [focus]` | Re-audit an existing codebase and choose again |
+| `/mndx:spec <idea>` | Start a feature: routed concerns + a spec with testable acceptance criteria |
 | `/mndx:plan` | Technical plan for the approved spec |
 | `/mndx:build` | Implement the approved plan, test-first |
-| `/mndx:verify` | Quality bar, AC→test proof, independent code review |
-| `/mndx:ship` | Update docs, changelog, local commit, close the item |
-| `/mndx:fix <bug>` | Bug path: root cause → `bug.md` → regression test first → fix |
-| `/mndx:chore <task>` | Small non-feature work with a one-paragraph `chore.md` |
+| `/mndx:verify` | Quality bar, AC→test proof, concern checklists, independent code review |
+| `/mndx:ship` | Update docs and changelog, local commit, close the item |
+| `/mndx:fix <bug>` | Root cause → `bug.md` → regression test first → fix |
+| `/mndx:chore <task>` | Small non-feature work |
 | `/mndx:status` | Where you are and the exact next step |
-| `/mndx:route <task>` | Show which production concerns, checklists and skills a task needs |
+| `/mndx:route <task>` | Which concerns, checklists and skills a task needs |
 | `/mndx:skills [list\|install\|update]` | Manage the community skills |
 | `/mndx:approve [doc]` | **You only.** Approve the waiting doc |
-| `/mndx:abandon [reason]` | **You only.** Drop the active item (docs are kept) |
-| `/mndx:autopilot <goal>` | **You only.** Run everything unattended, see below |
+| `/mndx:abandon [reason]` | **You only.** Drop the active item |
+| `/mndx:autopilot <goal\|stop>` | **You only.** Run everything unattended |
 
-## Every task is routed to its production concerns
+## Documentation
 
-Write tasks in plain language. Before speccing anything, MNDX's **router** maps the task to the production
-concerns it touches. Then it loads the matching **checklists** (MNDX's own) and **community skills**:
+| Guide | |
+|---|---|
+| [Getting started](docs/GETTING-STARTED.md) | install on any PC, first project, first feature |
+| [User guide](docs/GUIDE.md) | every command and step in depth, what MNDX creates, tips |
+| [Existing projects](docs/EXISTING-PROJECTS.md) | learn → audit → rebuild / fix / keep, and the backlog |
+| [Autopilot](docs/AUTOPILOT.md) | unattended runs, stop rules, permission setup |
+| [Production concerns](docs/CONCERNS.md) | the router, the 20 concerns, legal/compliance, extending it |
+| [Community skills](docs/SKILLS.md) | the 45 skills, why each was chosen, adding more |
+| [Customizing](docs/CUSTOMIZING.md) | change stacks, quality bar, checklists, templates; release a new version |
+| [How it works](docs/HOW-IT-WORKS.md) | hooks, state, the approval hash, the CLI, tests |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | gate, approvals, autopilot, updates |
+| [Design](docs/DESIGN.md) | the approved design and its rationale |
+| [Changelog](CHANGELOG.md) | release history |
 
-| Concern | MNDX checklist | Community skills |
-|---|---|---|
-| Testing *(always)* | ✓ | `tdd`, `property-based-testing`, `playwright-best-practices` |
-| Security *(always)* | ✓ OWASP | `security-and-hardening`, `sharp-edges`, `semgrep`, `secret-serialization` |
-| Product & UX *(any UI)* | ✓ | `frontend-design`, `web-design-guidelines`, `expo-design-system` |
-| Accessibility *(any UI)* | ✓ WCAG 2.2 AA, ADA/EAA | `accessibility` |
-| Web frontend · Mobile · API | stack playbooks | `frontend-ui-engineering`, `vercel-react-best-practices`, `expo-*`, `vercel-react-native-skills`, `api-and-interface-design`, `fastify-best-practices`, `node` |
-| Data & database | ✓ | `supabase-postgres-best-practices`, `domain-modeling` |
-| Identity & access | ✓ | `better-auth-*` |
-| Privacy, compliance & legal | ✓ GDPR, CCPA, COPPA, Gulf PDPLs… | none (no trustworthy community skill) |
-| Payments & billing | ✓ PCI, webhooks, IAP rules | `stripe-best-practices` |
-| i18n (incl. RTL) · Email/SMS · AI/LLM | ✓ | `claude-api` (AI) |
-| Performance · SEO · Observability | — | `performance-optimization`, `core-web-vitals`, `seo`, `observability-and-instrumentation` |
-| CI/CD · Infra & hosting · App stores | ✓ | `ci-cd-and-automation`, `gha-security-review`, `shipping-and-launch`, `apple-appstore-reviewer` |
-
-```
-node scripts/mndx.js route "Let users pay for a premium plan with Stripe"
-→ payments (mentions: pay, stripe), security, privacy + messaging (implied by payments), testing …
-```
-
-A keyword pass does the first round (`config/concerns.json`, with implied concerns: accounts → privacy,
-payments → security + privacy + receipts). Claude then adds what the words don't say and drops false positives.
-The result goes into the spec's **Concerns** table, and from there:
-- every concern adds acceptance criteria to the spec
-- the plan has a design decision and a proof for each concern
-- verify ticks each concern's checklist with evidence
-- the reviewer agents treat a missing security, privacy or payments concern as a blocker
-
-⚖ legal and compliance items are never decided silently. They become questions for you, or under autopilot a
-safe default plus a "Please check" item. **Nothing here is legal advice.**
-
-## Community skills
-
-MNDX uses 45 community skills from [skills.sh](https://skills.sh/), installed globally with the open-source
-`npx skills` CLI. Each one was chosen for its concern, ranked by installs and publisher trust (official vendors:
-Vercel, Anthropic, Stripe, Expo, Supabase, Microsoft, Sentry, Trail of Bits, Better Auth; plus well-known
-authors: Matt Pocock, Addy Osmani, Matteo Collina), and read before inclusion. The full list with reasons is in
-[config/skills.json](config/skills.json).
-
-```
-/mndx:skills list                 # what's installed
-/mndx:skills install [group|all]  # core, security, payments, ops, web, mobile, backend
-/mndx:skills update               # = npx skills update -g
-```
-
-MNDX's rules always win over a community skill's. If a skill suggests pushing, deploying, committing or
-skipping a doc, MNDX doesn't.
-
-## The hard gate
-
-- Until the active item's docs are approved, Claude can only edit `.md` files. Any other edit is blocked by a hook,
-  which tells Claude which step comes next.
-- An approval is tied to the doc's exact content (a SHA-256 hash). If the spec or plan changes afterwards, the gate
-  closes again until you re-approve. Ticking task checkboxes doesn't count as a change.
-- Approvals come only from **you typing** `/mndx:approve`. That command can't be triggered by Claude: the hook only
-  fires for typed commands, Claude's Skill-tool calls to it are blocked, and `.mndx/` can't be edited by Claude's
-  tools or shell.
-- `.scratch/` (git-ignored) is always writable for bug repro harnesses and throwaway spikes. Nothing in it ships.
-- Projects without a `.mndx/` folder aren't affected at all.
-
-**Known limit:** a deliberately obfuscated shell command could still write a file. MNDX's rules forbid it, and the
-gate exists to stop drift, not someone actively trying to get around it.
-
-## Autopilot
-
-```
-/mndx:autopilot build the habit tracker v1 from docs/PRODUCT.md
-```
-
-Typing it is your up-front approval for that goal. Claude then runs the whole pipeline alone:
-- it breaks the goal into items and writes every spec, plan and verify doc
-- the `spec-reviewer` and `code-reviewer` agents gate each step instead of you
-- it loops build ↔ verify until the quality bar is fully green
-- each item ships with a **local commit only**, never pushed
-
-It **stops cleanly** (instead of guessing) when the same failure survives 3 fix attempts, or when it reaches a
-decision that's yours to make: money, credentials, destructive data changes, or an unclear product direction.
-
-It always finishes with a report in `docs/autopilot/`: what was built, the real test and build results,
-**decisions it made without you**, and **what to check first**.
-
-- `/mndx:autopilot stop`, or typing any other `/mndx:` command, ends autopilot and hands approvals back to you.
-- To truly leave it running, start the session in a permission mode that doesn't stop for edits and test/build
-  commands (e.g. *Accept edits* plus allowed commands). Otherwise it waits at the first permission prompt.
-
-## What's inside
+## Repository layout
 
 ```
 .claude-plugin/   plugin.json, marketplace.json
-skills/           the /mndx:* commands + reference playbooks (workflow, quality-bar, stack-*, route, concerns/ checklists)
-config/           skills.json (community skills to install), concerns.json (router taxonomy)
-agents/           spec-reviewer, code-reviewer (fresh context, report-only)
-hooks/hooks.json  PreToolUse gate + UserPromptExpansion approvals
-scripts/          lib.js (state), mndx.js (CLI), gate.js, approve.js, test/
-templates/        project docs (PRODUCT, ARCHITECTURE, ADR, CLAUDE.md, CHANGELOG) and item docs
-docs/DESIGN.md    the design of MNDX itself
+skills/           /mndx:* commands, reference playbooks (workflow, quality-bar, stack-*), route, concerns/ checklists
+agents/           spec-reviewer, code-reviewer, project-auditor (fresh context, report-only)
+hooks/hooks.json  SessionStart context + PreToolUse gate + UserPromptExpansion approvals
+scripts/          lib.js, mndx.js (CLI), gate.js, approve.js, session.js, route.js, skills.js, test/
+config/           skills.json (community skills), concerns.json (router taxonomy)
+templates/        project docs and per-item docs
+docs/             the guides above
 ```
-
-Per project, MNDX creates:
-
-```
-.mndx/state.json                    active item, approvals (hashes), autopilot grant, history. Commit it
-docs/PRODUCT.md, ARCHITECTURE.md, adr/
-docs/features/001-…/spec.md plan.md verify.md
-docs/fixes/…/bug.md verify.md
-docs/chores/…/chore.md
-docs/autopilot/<date>-<goal>.md     autopilot reports
-CLAUDE.md, CHANGELOG.md
-```
-
-## Customize
-
-The stack playbooks (`skills/stack-*/SKILL.md`) and the quality bar (`skills/quality-bar/SKILL.md`) are
-opinionated starting points. Edit them as your preferences settle, then run `claude plugin update mndx@mndx`
-(or restart, since local-directory plugins load in place).
 
 ## Develop
 
 ```bash
 npm test
 ```
-
 ```bash
 claude plugin validate .
 ```
+
+CI runs the tests on Ubuntu and Windows (Node 20 and 24) on every push. To release a change, raise the version in
+`.claude-plugin/plugin.json`, push, then run `claude plugin marketplace update mndx` and
+`claude plugin update mndx@mndx` on each PC. See [Customizing](docs/CUSTOMIZING.md#releasing-your-change).
+
+## Limits, honestly
+
+- A deliberately disguised shell command could still write a file. The gate stops drift, not someone actively
+  trying to get around it.
+- The compliance, payments and store checklists flag what commonly applies. **They aren't legal advice.** ⚖
+  items always go to a human.
+- Autopilot needs a permissive permission mode to run unattended. It never pushes, deploys or spends money.
+
+## License
+
+[MIT](LICENSE) © mndthenerd. Community skills keep their own licenses (installed from their sources, not bundled here).

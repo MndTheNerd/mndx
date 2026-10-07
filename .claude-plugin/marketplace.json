@@ -1,6 +1,6 @@
 {
   "name": "mndx",
-  "owner": { "name": "mnd" },
+  "owner": { "name": "mndthenerd", "email": "mndthenerd@gmail.com" },
   "description": "Local marketplace for the MNDX solo product-grade pipeline plugin.",
   "plugins": [
     {

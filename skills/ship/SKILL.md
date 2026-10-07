@@ -28,4 +28,7 @@ If this is a git repo:
 
 ## 4. Close
 Run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" done`. This closes the gate again.
-Report the commit hash, then suggest the next item from PRODUCT.md's unticked v1 scope (`/mndx:spec <it>`).
+If the item came from `docs/BACKLOG.md`, set its Status to `done (<commit>)`. If it resolved an ASSESSMENT finding,
+mark that finding resolved.
+Report the commit hash, then suggest the next item: the first `todo` line in BACKLOG.md, or else PRODUCT.md's first
+unticked v1 scope line (`/mndx:spec <it>`).

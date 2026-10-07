@@ -1,6 +1,13 @@
 {
-  "description": "MNDX hard gate: blocks code edits until the active work item's docs are approved, and records approvals only from user-typed /mndx:approve and /mndx:autopilot.",
+  "description": "MNDX: session context (SessionStart), the hard gate on code edits (PreToolUse), and approvals only from user-typed /mndx:approve and /mndx:autopilot (UserPromptExpansion).",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/session.js"], "timeout": 10 }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|PowerShell|Skill",

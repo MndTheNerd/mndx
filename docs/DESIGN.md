@@ -144,10 +144,10 @@ The bar is defined once in `CLAUDE.md` by `/mndx:init` and enforced at `/mndx:ve
 ## 9. Install & use
 
 ```
-/plugin marketplace add D:\localAi\MNDX
-/plugin install mndx@mndx
+claude plugin marketplace add MndTheNerd/mndx      # or a local folder path
+claude plugin install mndx@mndx
 ```
-Then in any project: `/mndx:init` → `/mndx:spec "..."` → `/mndx:approve` → `/mndx:plan` → `/mndx:approve` → `/mndx:build` → `/mndx:verify` → `/mndx:ship`.
+(Full steps: [GETTING-STARTED.md](GETTING-STARTED.md).) Then in any project: `/mndx:init` → `/mndx:spec "..."` → `/mndx:approve` → `/mndx:plan` → `/mndx:approve` → `/mndx:build` → `/mndx:verify` → `/mndx:ship`.
 
 ## 10. Build plan for MNDX itself
 
@@ -186,6 +186,31 @@ policies. A task written in plain language rarely names these, so they get silen
 - **Gate change:** `.scratch/` is always writable (git-ignored) so `diagnosing-bugs` can build repro loops before
   `bug.md` is approved, without opening source files.
 
-## 12. Open questions
+## 12. Adopting existing projects (added 2026-10-07, v0.2.0)
+
+**Need:** most real work happens on code that already exists, often vibe-coded or inherited. MNDX has to
+understand it before changing it, and the owner must choose how far to go.
+
+**Design:**
+- `/mndx:init` detects an existing codebase and hands off to the **assess** skill (also runnable as `/mndx:assess`).
+- **Learn:** read the whole project (parallel Explore agents for large ones), git hot spots, and **run** its own
+  install/test/lint/typecheck/build plus a dependency audit for real facts. Never migrations, seeds, deploys, or
+  anything touching real data.
+- **Document what exists:** the actual ARCHITECTURE, an inferred PRODUCT (assumptions marked), GLOSSARY, the real
+  quality bar in CLAUDE.md, and an existing-stack ADR, true whatever the choice.
+- **Audit:** the new `project-auditor` agent (fresh context, read-only) scores 15 areas 0–3 and ranks findings with
+  file:line, impact, fix and effort, plus what's worth keeping. Claude verifies the critical and high findings
+  before reporting. Output: `docs/ASSESSMENT.md`.
+- **Choose** (AskUserQuestion, recommendation first): **Rebuild** (incremental strangler vs fresh alongside;
+  REBUILD.md with a parity inventory; backlog foundation → parity features → cutover → removal) · **Fix** (a
+  risk-ordered BACKLOG of fix and chore items, quality bar first) · **Keep** (adopt; critical findings listed as
+  accepted risk). The decision is recorded as an ADR.
+- **Backlog:** `docs/BACKLOG.md` holds the ordered queue (only one item is active at a time). status, ship and the
+  session hook suggest its first `todo` line.
+- **Autopilot:** fix critical/high security, data or money findings, otherwise keep; **never rebuild without the user**.
+- **SessionStart hook** (`session.js`): MNDX projects start each session with the active item, gate and next
+  backlog item; un-adopted codebases get a one-time `/mndx:init` hint; `.mndxignore` silences it.
+
+## 13. Open questions
 
 - None blocking. Stack playbooks start opinionated, and you can edit them as your preferences settle.
