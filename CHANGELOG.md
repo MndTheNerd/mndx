@@ -5,12 +5,23 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-07
+
 ### Changed
 - **`/mndx:build` now ends each task with a bounded refactor** (red → green → refactor). After the tests pass,
   Claude makes one pass over just the code it wrote for that task (duplication, names, convoluted logic), then
   re-runs the same tests and typecheck. No new behavior, no new tests, nothing outside the task's files, and a
   refactor that turns a test red is undone. The `tdd` skill leaves refactoring to review, so cleanup used to
   wait for a reviewer to flag it.
+
+### Fixed
+- **Docs no longer say the repo is private.** It's public, so installing needs no GitHub sign-in. The README
+  note, the GitHub CLI prerequisite and sign-in step in Getting Started, and the `gh auth` advice in
+  Troubleshooting are removed.
+
+### Added
+- [Token savings](docs/TOKEN-SAVINGS.md): a proposal for cutting an MNDX run's token use without weakening a
+  gate, based on where one real run's tokens went.
 
 ## [0.5.0] - 2026-10-07
 

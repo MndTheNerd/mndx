@@ -83,8 +83,9 @@ blocked from touching it) or fix the JSON by hand.
 
 ## Installing from GitHub fails on another PC
 
-- `gh auth status` must show you're logged in (the repo is private), and `gh auth setup-git` must have run.
-- `claude plugin marketplace add MndTheNerd/mndx` needs Git on the PATH.
+- `claude plugin marketplace add MndTheNerd/mndx` needs Git on the PATH (`git --version`). The repo is public,
+  so no GitHub sign-in is needed.
+- If it still fails, check that you can reach github.com (a proxy or firewall is the usual cause).
 
 ## Reset a project's MNDX state completely
 
