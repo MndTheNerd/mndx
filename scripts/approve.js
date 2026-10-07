@@ -16,12 +16,14 @@ function respond(obj) {
 const block = (reason) => respond({ decision: 'block', reason: `MNDX: ${reason}` });
 const notify = (message) => respond({ systemMessage: `MNDX: ${message}` });
 
+// Hosts disagree on field names: the documented shape is `args: [...]` + `original_prompt`, while the
+// desktop app sends `command_args: "..."` + `prompt` (the typed text). Read whichever is present.
 function parse(input) {
-  const original = String(input.original_prompt || `/${input.command_name || ''}`);
+  const typed = [input.original_prompt, input.prompt].find((p) => typeof p === 'string' && /^\s*\/mndx:/.test(p));
+  const original = typed || `/${input.command_name || ''}`;
   const match = original.match(/^\s*\/mndx:([\w-]+)\s*([\s\S]*)$/);
   if (!match) return null;
-  // Some hosts (the desktop app) send `args: []` and keep the arguments only in original_prompt.
-  const given = Array.isArray(input.args) ? input.args.join(' ') : String(input.args || '');
+  const given = Array.isArray(input.args) ? input.args.join(' ') : String(input.args || input.command_args || '');
   return { name: match[1], args: (given.trim() || match[2]).trim() };
 }
 

@@ -8,10 +8,11 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 ## [0.4.1] - 2026-10-07
 
 ### Fixed
-- **`/mndx:autopilot <goal>` lost its goal in the desktop app.** The app sends the hook `args: []` and keeps the
-  arguments only in `original_prompt`, so the goal was read as empty: the command was blocked with "tell autopilot
-  what to build", or (with an active item) silently became "finish <item>". The hook now falls back to the typed
-  prompt when `args` is empty. The same fix applies to `/mndx:approve <doc>`.
+- **`/mndx:autopilot <goal>` lost its goal in the Claude desktop app.** The app's `UserPromptExpansion` input
+  carries `command_args` (a string) and `prompt` (the typed text) instead of the documented `args` and
+  `original_prompt`, so the goal was read as empty. The command was blocked with "tell autopilot what to build",
+  or, with an active item, silently became "finish <item>". The hook now reads either shape, and falls back to
+  the typed prompt when the argument fields are empty. The same fix applies to `/mndx:approve <doc>`.
 
 ## [0.4.0] - 2026-10-07
 

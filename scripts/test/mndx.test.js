@@ -206,6 +206,24 @@ test('autopilot reads the goal from the typed prompt when the host sends an empt
   assert.equal(state(dir).autopilot.goal, 'work the backlog');
 });
 
+test('autopilot reads the goal from the desktop app hook input (command_args + prompt)', () => {
+  // Captured from Claude desktop 2.1.289: no `args` / `original_prompt` fields at all.
+  const desktopInput = (dir, prompt, commandArgs) => run('approve.js', [], {
+    cwd: dir,
+    stdin: JSON.stringify({ hook_event_name: 'UserPromptExpansion', cwd: dir, expansion_type: 'slash_command',
+      command_name: prompt.match(/^\/([\w:-]+)/)[1], command_args: commandArgs, command_source: 'plugin', prompt }),
+  });
+  const dir = tmpProject();
+  const res = desktopInput(dir, '/mndx:autopilot have the website live', 'have the website live');
+  assert.equal(res.code, 0, res.err);
+  assert.match(JSON.parse(res.out).systemMessage, /autopilot granted/);
+  assert.equal(state(dir).autopilot.goal, 'have the website live');
+
+  const stop = desktopInput(dir, '/mndx:autopilot stop', 'stop');
+  assert.match(JSON.parse(stop.out).systemMessage, /stopped/);
+  assert.equal(state(dir).autopilot, null);
+});
+
 test('lifecycle: one active item, stages need approval, done needs ship', () => {
   const dir = tmpProject();
   cli(dir, 'new', 'fix', 'crash on save');
