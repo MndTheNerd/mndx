@@ -5,13 +5,31 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-07
+
+### Changed
+- **Reviewer agents run on Sonnet by default** (`model: sonnet` in `spec-reviewer`, `code-reviewer` and
+  `project-auditor`). They used to inherit the session's model, so every review ran on the most expensive one.
+  Reviews are the largest token cost of a run: a full feature used about 15 reviewer passes of 25k–95k tokens
+  each. They only read and report, so a cheaper model does the job. Set `model: opus` (or `inherit`) in an
+  agent file to restore the old behavior, for example for a security-critical codebase. See
+  [CUSTOMIZING.md](docs/CUSTOMIZING.md).
+
+## [0.4.2] - 2026-10-07
+
+### Fixed
+- **`/mndx:autopilot <goal>` still lost its goal in the Claude desktop app after 0.4.1.** 0.4.1 handled an
+  empty `args` array, but the app's `UserPromptExpansion` input has no `args` or `original_prompt` at all. It
+  carries `command_args` (a string) and `prompt` (the typed text), so the goal was still read as empty: the
+  command was blocked with "tell autopilot what to build", or, with an active item, silently became
+  "finish <item>". The hook now reads either shape. The same fix applies to `/mndx:approve <doc>`. The
+  regression test uses the input captured from the desktop app.
+
 ## [0.4.1] - 2026-10-07
 
 ### Fixed
-- **`/mndx:autopilot <goal>` lost its goal in the desktop app.** The app sends the hook `args: []` and keeps the
-  arguments only in `original_prompt`, so the goal was read as empty: the command was blocked with "tell autopilot
-  what to build", or (with an active item) silently became "finish <item>". The hook now falls back to the typed
-  prompt when `args` is empty. The same fix applies to `/mndx:approve <doc>`.
+- **`/mndx:autopilot <goal>` lost its goal when the host sent an empty `args` array.** The hook now falls back
+  to the typed prompt when `args` is empty. (Incomplete for the desktop app: see 0.4.2.)
 
 ## [0.4.0] - 2026-10-07
 
