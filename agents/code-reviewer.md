@@ -16,6 +16,9 @@ You'll be given the item folder (`docs/.../NNN-slug/`) and the changed files. Re
 - `git diff` / `git status` if this is a git repo (Bash is for **read-only** commands only: git diff/log/status,
   listing files. Never modify anything)
 
+Also read the item's `verify.md` if it exists. A **Live run** that doesn't actually exercise each AC's flow, or
+evidence that contradicts the claims, is a **major** finding.
+
 ## Check, in priority order
 1. **Correctness:** logic errors, wrong edge-case handling, off-by-one, null/undefined paths, async misuse
    (unawaited promises, races, missing cleanup), broken error handling. Trace each AC through the code: does it

@@ -15,6 +15,24 @@ The block message says why. Common cases:
 | `.mndx/ is managed by MNDX` | something tried to edit the state | expected. State changes go through the CLI and your commands |
 | `do not touch .mndx/ from the shell` | a shell command named `.mndx/` | expected. Use `mndx.js status --json` to read it |
 
+## `stage ship` / `done` refuses
+
+The message names the exact rule:
+| Message | Fix |
+|---|---|
+| `No quality-bar run recorded` | run `mndx.js check` (via `/mndx:verify`) |
+| `Quality bar failed: …` | fix it, then run `check` again. The output tail shows why |
+| `Code changed since the last mndx.js check` | run `check` again. Any code edit after a check invalidates it |
+| `…older than this item's approval` | run `check` again |
+| `no Test command` | add a `Test` row to CLAUDE.md's Quality bar table |
+| `verify.md … not PASS` / `no "## Live run" evidence` | finish `/mndx:verify`, including running the app |
+
+## "MNDX watchdog: that shell command changed code while the gate is CLOSED"
+
+A shell command (a redirect, a script, a generator) changed code files without approval. Claude should revert them
+unless they're generated artifacts the approved docs expect. Each event is logged in `.mndx/violations.log`, and
+`/mndx:status` shows the count.
+
 ## The gate doesn't block anything
 
 1. Is the plugin installed and enabled? `claude plugin list` should show `mndx@mndx … enabled`.

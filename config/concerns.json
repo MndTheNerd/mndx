@@ -60,7 +60,7 @@
     {
       "id": "data",
       "title": "Data & database",
-      "triggers": ["database", "db", "table", "schema", "migration", "sql", "postgres", "query", "index", "persist", "import", "export", "csv", "report"],
+      "triggers": ["database", "db", "table", "schema", "migration", "sql", "postgres", "query", "index", "persist", "persisted", "saved", "local storage", "localstorage", "indexeddb", "offline", "sync", "import", "export", "csv", "report"],
       "implies": ["security"],
       "checklist": "data.md",
       "skills": ["supabase-postgres-best-practices", "domain-modeling"]
@@ -101,6 +101,13 @@
       "triggers": ["seo", "search engine", "google search", "landing page", "marketing", "blog", "public page", "social", "open graph", "sitemap", "indexing"],
       "checklist": null,
       "skills": ["seo", "web-quality-audit"]
+    },
+    {
+      "id": "time",
+      "title": "Dates, times & scheduling",
+      "triggers": ["today", "tomorrow", "yesterday", "daily", "weekly", "monthly", "streak", "streaks", "calendar", "schedule", "scheduling", "recurring", "deadline", "due date", "timestamp", "countdown", "midnight", "booking", "bookings", "appointment", "appointments", "expiry", "expires", "timezone", "time zone", "dst"],
+      "checklist": "time.md",
+      "skills": ["property-based-testing"]
     },
     {
       "id": "i18n",

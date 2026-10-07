@@ -3,6 +3,30 @@
 All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions:
 [SemVer](https://semver.org/).
 
+## [0.3.0] - 2026-10-07
+
+### Added
+- **Enforced verification:** `mndx.js check` runs CLAUDE.md's quality-bar commands for real and records exit codes
+  plus a code fingerprint in `.mndx/checks.json`. `stage ship` and `done` refuse unless the record is green,
+  includes a Test command, is newer than the approval, still matches the code, and (features/fixes) `verify.md` ends
+  in PASS with live-run evidence.
+- **Shell watchdog** (Pre/PostToolUse on Bash/PowerShell): snapshots dirty git files around each shell command while
+  the gate is closed, flags code changed through the shell, and logs it to `.mndx/violations.log`. Shown in
+  `mndx.js status`.
+- **Live run in verify:** every AC's flow is exercised in the running app (browser / real requests / real CLI calls),
+  recorded in verify.md's new "Live run" section.
+- New concern **Dates, times & scheduling** (`time.md` checklist), plus persistence trigger words for the data concern.
+- `mndx.js skills list` reports command-line tools that skills need but that aren't installed (semgrep,
+  playwright-cli). Verify records those checks as open, never as passed.
+
+### Fixed (found by dogfooding: MNDX built a real app end to end under autopilot)
+- Hooks crashed on a UTF-8 BOM in their stdin (Windows PowerShell pipes add one). All hooks now share a tolerant reader.
+- The router missed date logic ("today", "streak") and local persistence ("saved").
+- Item slugs were cut mid-word. They now stop at a word boundary.
+- Gate messages showed Windows backslashes. Paths are always shown with `/`.
+- `/mndx:ship` committed before closing the item, so the commit held a stale state. It now runs `done` first.
+- The setup chore now adds `.gitattributes` (LF everywhere) and scaffolds generators into `.scratch/` first.
+
 ## [0.2.0] - 2026-10-07
 
 ### Added

@@ -25,6 +25,12 @@ const POST_APPROVAL_STAGES = ['build', 'verify', 'ship'];
 
 class MndxError extends Error {}
 
+// Hook input from stdin. Tolerates a UTF-8 BOM (Windows PowerShell adds one when piping) and empty input.
+function readHookInput() {
+  const raw = fs.readFileSync(0, 'utf8').replace(/^﻿/, '').trim();
+  return raw ? JSON.parse(raw) : {};
+}
+
 function statePath(root) {
   return path.join(root, STATE_DIR, STATE_FILE);
 }
@@ -116,7 +122,7 @@ function gateStatus(root, state) {
   const item = state.active;
   for (const s of approvalStatus(root, item)) {
     if (s.state === 'approved') continue;
-    const rel = path.relative(root, s.file);
+    const rel = path.relative(root, s.file).split(path.sep).join('/');
     const reasons = {
       missing: `${rel} does not exist yet.`,
       template: `${rel} is still an unfilled template.`,
@@ -165,7 +171,7 @@ function approve(root, state, { doc, by }) {
   }
   const blocker = statuses.slice(0, statuses.indexOf(target)).find((s) => s.state !== 'approved');
   if (blocker) throw new MndxError(`Approve ${blocker.doc} before ${target.doc}.`);
-  const rel = path.relative(root, target.file);
+  const rel = path.relative(root, target.file).split(path.sep).join('/');
   if (target.state === 'missing') throw new MndxError(`${rel} does not exist yet.`);
   if (target.state === 'template') throw new MndxError(`${rel} is still an unfilled template.`);
 
@@ -178,14 +184,16 @@ function approve(root, state, { doc, by }) {
   return `Approved ${target.doc} for ${item.id} (by ${by}). Stage is now: ${item.stage}.`;
 }
 
+// Up to 40 chars, cut at a word boundary (never mid-word).
 function slugify(title) {
-  return title
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40)
-    .replace(/-+$/g, '') || 'item';
+  const words = title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean);
+  let slug = '';
+  for (const w of words) {
+    const next = slug ? `${slug}-${w}` : w;
+    if (next.length > 40) break;
+    slug = next;
+  }
+  return slug || (words[0] || 'item').slice(0, 40);
 }
 
 // Create a work item: allocate an id, copy the templates, make it active.
@@ -239,12 +247,16 @@ function setStage(root, state, stage) {
   }
   const gate = gateStatus(root, state);
   if (!gate.open) throw new MndxError(`${gate.reason} ${gate.next}`);
+  if (stage === 'ship') {
+    const blocker = require('./check').shipBlocker(root, state.active); // lazy: check.js depends on this module
+    if (blocker) throw new MndxError(`Not ready to ship: ${blocker}`);
+  }
   state.active.stage = stage;
   writeState(root, state);
 }
 
 module.exports = {
-  STATE_DIR, SCRATCH_DIR, TEMPLATE_MARKER, TEMPLATES_DIR, KINDS, POST_APPROVAL_STAGES, MndxError,
+  STATE_DIR, SCRATCH_DIR, TEMPLATE_MARKER, TEMPLATES_DIR, KINDS, POST_APPROVAL_STAGES, MndxError, readHookInput,
   statePath, findRoot, emptyState, readState, writeState, initState, docHash, docFile,
   approvalStatus, gateStatus, computeStage, approve, slugify, newItem, closeItem, setStage,
 };

@@ -33,18 +33,31 @@ function selectGroups(args) {
   return groups;
 }
 
+// Whether a command-line tool a skill depends on is on the PATH.
+function hasCommand(command) {
+  const res = spawnSync(process.platform === 'win32' ? 'where' : 'which', [command], { stdio: 'ignore' });
+  return res.status === 0;
+}
+
 function list(cwd) {
   const skills = loadManifest();
   const lines = [];
+  const missingTools = [];
   for (const group of GROUPS) {
     lines.push(`${group}:`);
     for (const s of skills.filter((x) => x.group === group)) {
       const mark = isInstalled(s.name, cwd) ? '✓' : '·';
-      lines.push(`  ${mark} ${s.name.padEnd(36)} ${s.repo.padEnd(44)} ${s.use}`);
+      const toolMissing = s.requires && !hasCommand(s.requires.command);
+      if (toolMissing) missingTools.push(s);
+      lines.push(`  ${mark} ${s.name.padEnd(36)} ${s.repo.padEnd(44)} ${s.use}${toolMissing ? `  ⚠ needs \`${s.requires.command}\`` : ''}`);
     }
   }
   const missing = skills.filter((s) => !isInstalled(s.name, cwd)).length;
   lines.push('', missing ? `${missing} not installed. Run: mndx.js skills install [${GROUPS.join('|')}|all]` : 'All recommended skills are installed.');
+  if (missingTools.length) {
+    lines.push('', 'Tools these skills run (not installed; verify records their checks as open until they are):');
+    for (const s of missingTools) lines.push(`  ${s.requires.command.padEnd(16)} ${s.requires.install}`);
+  }
   return lines.join('\n');
 }
 

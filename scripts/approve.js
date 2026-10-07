@@ -60,7 +60,7 @@ function handleAutopilot(cwd, args) {
 }
 
 function main() {
-  const input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
+  const input = lib.readHookInput();
   const cmd = parse(input);
   if (!cmd) return;
   const cwd = input.cwd || process.cwd();

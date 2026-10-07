@@ -28,7 +28,9 @@ The internals: hooks, state, the approval hash, the CLI. For the design rational
 | `scripts/gate.js` | **PreToolUse:** decides whether an edit or shell command may run |
 | `scripts/approve.js` | **UserPromptExpansion:** the only writer of approvals and autopilot grants |
 | `scripts/lib.js` | State, hashing, approval and item logic shared by everything |
-| `scripts/mndx.js` | The CLI Claude uses (new item, stage, done, route, skills…) |
+| `scripts/mndx.js` | The CLI Claude uses (new item, stage, check, done, route, skills…) |
+| `scripts/check.js` | `mndx.js check` + the ship rules: real quality-bar runs, code fingerprint, verify.md PASS + live run |
+| `scripts/watch.js` | **Pre/PostToolUse (Bash, PowerShell):** the shell watchdog, which flags code changed through the shell while the gate is closed |
 | `scripts/route.js` | The concern router's deterministic pass |
 | `scripts/skills.js` | Community skills install/update via `npx skills` |
 
@@ -96,9 +98,29 @@ closes until you re-approve.
   `approve.js` when you type `/mndx:autopilot`.
 - Typing any other `/mndx:` command ends an active grant.
 
-**Known limit:** a deliberately disguised shell command could still write a file (for example a script that
-builds the path from pieces). MNDX's rules forbid it, and the gate exists to stop drift, not someone actively
-trying to get around it.
+## The shell watchdog (`watch.js`)
+
+The edit gate can't see files written by shell commands. So while the gate is **closed**, every Bash/PowerShell
+command is wrapped: before it runs, the dirty files in git are hashed; afterwards they're hashed again. Any code
+file (not `.md`, `.scratch/`, `.mndx/` or a lockfile) that changed is reported back to Claude with an instruction
+to revert it, and logged to `.mndx/violations.log`. `mndx.js status` shows the count. With the gate open, or outside
+git, it does nothing.
+
+**Remaining limit:** the watchdog detects and reports, it doesn't undo. A change made and then reverted within the
+same command, or code written outside the repo, isn't seen.
+
+## Ship rules (`check.js`)
+
+`mndx.js check` runs every command in CLAUDE.md's **Quality bar** table (except install/run rows and placeholders)
+and writes `.mndx/checks.json`: each command's exit code, duration and output tail, plus a **fingerprint** (a hash of
+all code files: git-tracked + untracked, excluding docs, `.mndx/`, `.scratch/`, build output and lockfiles).
+
+`stage ship` and `done` refuse unless:
+1. a check record exists, every command passed, and one of them is a Test command
+2. the record is newer than the item's last approval
+3. the fingerprint still matches the code (any change after `check` means running it again)
+4. for features and fixes: `verify.md` is filled in, its `## Verdict` says PASS (not FAIL), and its `## Live run`
+   section has real content
 
 ## The CLI
 
@@ -111,7 +133,8 @@ node scripts/mndx.js help
 | `init` | create `.mndx/state.json` |
 | `status [--json]` | everything, including the gate decision and doc states |
 | `new <feature\|fix\|chore> <title>` | allocate `NNN-slug`, copy templates, make it active |
-| `stage <build\|verify\|ship>` | only once docs are approved |
+| `stage <build\|verify\|ship>` | only once docs are approved; `ship` also needs the ship rules |
+| `check` | run the quality bar for real and record it |
 | `done [note]` | close as shipped (stage must be `ship`) |
 | `abandon [reason]` | close without shipping |
 | `approve [doc]` | **autopilot only** |

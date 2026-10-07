@@ -1,12 +1,12 @@
 {
   "name": "mndx",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "MNDX Claude Code plugin: hooks, CLI and tests (no runtime dependencies).",
   "license": "MIT",
   "repository": "https://github.com/MndTheNerd/mndx",
   "engines": { "node": ">=18" },
   "scripts": {
-    "test": "node --test scripts/test/mndx.test.js scripts/test/skills.test.js scripts/test/session.test.js"
+    "test": "node --test scripts/test/mndx.test.js scripts/test/skills.test.js scripts/test/session.test.js scripts/test/check.test.js scripts/test/watch.test.js"
   }
 }

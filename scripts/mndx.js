@@ -3,10 +3,12 @@
 // MNDX CLI. Claude runs this through Bash to manage work items; it can never grant approvals
 // itself except under an autopilot grant that a user-typed /mndx:autopilot created.
 
+const fs = require('fs');
 const path = require('path');
 const lib = require('./lib');
 const skills = require('./skills');
 const route = require('./route');
+const check = require('./check');
 
 const USAGE = `Usage: node mndx.js <command> [args]
 
@@ -14,7 +16,9 @@ const USAGE = `Usage: node mndx.js <command> [args]
   status [--json]           Show the active item, approvals, gate and autopilot state
   new <feature|fix|chore> <title...>
                             Start a work item (copies doc templates, makes it active)
-  stage <build|verify|ship> Move the active item forward (only once its docs are approved)
+  stage <build|verify|ship> Move the active item forward (only once its docs are approved;
+                            ship also needs a green, current check and a PASS verify.md)
+  check                     Run CLAUDE.md's quality-bar commands for real and record the results
   done [note...]            Close the active item as shipped (must be at stage "ship")
   abandon [reason...]       Close the active item without shipping (docs are kept)
   approve [doc]             Autopilot only: approve the next doc after review
@@ -54,6 +58,24 @@ function describe(root, state) {
   }
   const gate = lib.gateStatus(root, state);
   lines.push(`Code gate: ${gate.open ? 'OPEN' : 'CLOSED'} — ${gate.reason}${gate.next ? ' ' + gate.next : ''}`);
+  const record = check.readRecord(root);
+  if (record) {
+    const failed = record.results.filter((r) => r.code !== 0).map((r) => r.name);
+    const current = record.fingerprint === check.fingerprint(root);
+    lines.push(`Last check: ${record.at.slice(0, 16).replace('T', ' ')} — ${failed.length ? 'FAILED: ' + failed.join(', ') : 'all green'}${current ? '' : ' (code changed since)'}`);
+  }
+  if (state.active && state.active.stage === 'ship') {
+    const blocker = check.shipBlocker(root, state.active);
+    lines.push(`Ship readiness: ${blocker ? 'NOT READY — ' + blocker : 'ready'}`);
+  }
+  const violations = path.join(root, lib.STATE_DIR, 'violations.log');
+  if (fs.existsSync(violations)) {
+    const entries = fs.readFileSync(violations, 'utf8').trim().split('\n').filter(Boolean);
+    if (entries.length) {
+      const last = JSON.parse(entries[entries.length - 1]);
+      lines.push(`⚠ Watchdog: ${entries.length} shell change(s) to code while the gate was closed; last ${last.at.slice(0, 16).replace('T', ' ')}: ${last.files.join(', ')}`);
+    }
+  }
   const recent = state.history.slice(-5).reverse();
   if (recent.length) {
     lines.push('Recent:');
@@ -103,6 +125,8 @@ function main(argv) {
       }
       const gate = lib.gateStatus(root, state);
       if (!gate.open) throw new lib.MndxError(`${gate.reason} ${gate.next}`);
+      const blocker = check.shipBlocker(root, state.active);
+      if (blocker) throw new lib.MndxError(`Not ready to ship: ${blocker}`);
       const item = lib.closeItem(root, state, 'shipped', rest.join(' '));
       return `Shipped ${item.id}. Code gate is closed until the next item is approved.`;
     }
@@ -132,6 +156,13 @@ function main(argv) {
       if (state.active) state.active.autopilot = false;
       lib.writeState(root, state);
       return `Autopilot ended (${outcome}). Approvals are back to the user.`;
+    }
+    case 'check': {
+      const root = requireRoot();
+      const record = check.runChecks(root);
+      const out = check.formatRecord(record);
+      if (record.results.some((r) => r.code !== 0)) throw new lib.MndxError(out);
+      return out;
     }
     case 'route': {
       const json = rest.includes('--json');

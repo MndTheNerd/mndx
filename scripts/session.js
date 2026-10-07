@@ -60,7 +60,7 @@ const UNADOPTED_HINT = 'This folder contains an existing codebase that is not se
   + 'choose to rebuild it properly, fix what needs fixing, or keep it as-is. Don\'t repeat it, and don\'t hold up their request.';
 
 function main() {
-  const input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
+  const input = lib.readHookInput();
   const cwd = input.cwd || process.cwd();
   if (fs.existsSync(path.join(cwd, '.mndxignore'))) return;
   let context = null;

@@ -48,6 +48,14 @@ function typed(cwd, prompt) {
 const state = (cwd) => JSON.parse(fs.readFileSync(path.join(cwd, '.mndx', 'state.json'), 'utf8'));
 const itemDir = (cwd) => path.join(cwd, state(cwd).active.dir);
 
+// A green quality bar plus a PASS verify.md with live-run evidence, so the active item may ship.
+function passingProject(cwd) {
+  const ok = 'node -e "process.exit(0)"';
+  fs.writeFileSync(path.join(cwd, 'CLAUDE.md'), `# P\n\n## Quality bar\n| Check | Command |\n|---|---|\n| Install | \`npm i\` |\n| Lint | \`${ok}\` |\n| Test | \`${ok}\` |\n`);
+  fs.writeFileSync(path.join(itemDir(cwd), 'verify.md'),
+    '# v\n\n## Live run\n| Flow | Steps | Observed | Evidence |\n|---|---|---|---|\n| AC1 | ran it | works | shot.png |\n\n## Verdict\nPASS\n');
+}
+
 function fill(cwd, doc, body = `# ${doc}\n\n> **Status:** DRAFT\n\n- **AC1** Given x, when y, then z\n- [ ] T1 do it\n`) {
   fs.writeFileSync(path.join(itemDir(cwd), `${doc}.md`), body);
 }
@@ -112,6 +120,13 @@ test('full feature flow: spec → approve → plan → approve opens the gate', 
   assert.equal(state(dir).active.stage, 'build');
   assert.equal(edit(dir, 'src/login.ts').allowed, true);
   assert.equal(typed(dir, '/mndx:approve').decision, 'block', 'nothing left to approve');
+});
+
+test('item slugs stop at a word boundary', () => {
+  const lib = require('../lib');
+  assert.equal(lib.slugify('habits: add, mark done today, current streak'), 'habits-add-mark-done-today-current');
+  assert.equal(lib.slugify('a'.repeat(50)), 'a'.repeat(40));
+  assert.equal(lib.slugify('!!!'), 'item');
 });
 
 test('ticking plan checkboxes keeps the gate open; changing content closes it', () => {
@@ -187,7 +202,11 @@ test('lifecycle: one active item, stages need approval, done needs ship', () => 
   fill(dir, 'bug'); typed(dir, '/mndx:approve');
   assert.equal(cli(dir, 'done').code, 1, 'must reach ship first');
   assert.equal(cli(dir, 'stage', 'verify').code, 0);
-  assert.equal(cli(dir, 'stage', 'ship').code, 0);
+  assert.match(cli(dir, 'stage', 'ship').err, /No quality-bar run recorded/, 'ship needs a real check');
+  passingProject(dir);
+  assert.equal(cli(dir, 'check').code, 0);
+  const shipped = cli(dir, 'stage', 'ship');
+  assert.equal(shipped.code, 0, shipped.err);
   assert.equal(cli(dir, 'done').code, 0);
   assert.equal(state(dir).active, null);
   assert.equal(edit(dir, 'src/a.ts').allowed, false, 'gate closes after ship');
@@ -204,6 +223,14 @@ test('.scratch/ is always writable, lookalike folders are not', () => {
   assert.equal(edit(dir, '.scratch/deep/harness.py').allowed, true);
   assert.equal(edit(dir, '.scratchy/sneaky.ts').allowed, false);
   assert.equal(edit(dir, 'src/.scratch/sneaky.ts').allowed, false);
+});
+
+test('hook input with a UTF-8 BOM (Windows PowerShell pipes) is accepted', () => {
+  const dir = tmpProject();
+  const res = run('gate.js', [], { cwd: dir, stdin: '﻿' + JSON.stringify({ hook_event_name: 'PreToolUse', cwd: dir,
+    tool_name: 'Write', tool_input: { file_path: path.join(dir, 'src', 'a.ts') } }) });
+  assert.equal(res.code, 0, res.err);
+  assert.equal(JSON.parse(res.out).hookSpecificOutput.permissionDecision, 'deny');
 });
 
 test('a corrupt state file fails closed', () => {
