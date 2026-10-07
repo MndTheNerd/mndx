@@ -193,6 +193,19 @@ test('autopilot stop and autopilot-end', () => {
   assert.equal(state(dir).history.at(-1).outcome, 'completed');
 });
 
+test('autopilot reads the goal from the typed prompt when the host sends an empty args array', () => {
+  // The desktop app sends args: [] and keeps the arguments only in original_prompt.
+  const dir = tmpProject();
+  const res = run('approve.js', [], {
+    cwd: dir,
+    stdin: JSON.stringify({ hook_event_name: 'UserPromptExpansion', cwd: dir, command_name: 'mndx:autopilot',
+      args: [], original_prompt: '/mndx:autopilot work the backlog' }),
+  });
+  assert.equal(res.code, 0, res.err);
+  assert.match(JSON.parse(res.out).systemMessage, /autopilot granted/);
+  assert.equal(state(dir).autopilot.goal, 'work the backlog');
+});
+
 test('lifecycle: one active item, stages need approval, done needs ship', () => {
   const dir = tmpProject();
   cli(dir, 'new', 'fix', 'crash on save');

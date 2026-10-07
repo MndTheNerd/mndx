@@ -20,8 +20,9 @@ function parse(input) {
   const original = String(input.original_prompt || `/${input.command_name || ''}`);
   const match = original.match(/^\s*\/mndx:([\w-]+)\s*([\s\S]*)$/);
   if (!match) return null;
-  const args = Array.isArray(input.args) ? input.args.join(' ') : String(input.args || match[2] || '');
-  return { name: match[1], args: args.trim() };
+  // Some hosts (the desktop app) send `args: []` and keep the arguments only in original_prompt.
+  const given = Array.isArray(input.args) ? input.args.join(' ') : String(input.args || '');
+  return { name: match[1], args: (given.trim() || match[2]).trim() };
 }
 
 function endAutopilot(root, state, outcome, note) {
