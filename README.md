@@ -42,8 +42,6 @@ claude plugin install mndx@mndx
 
 Then, in a Claude Code session, run `/mndx:skills install all` and start a new session.
 
-> The repo is private. On a new PC, run `gh auth login` and `gh auth setup-git` first.
-
 ## Use
 
 ```

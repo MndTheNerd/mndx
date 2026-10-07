@@ -9,9 +9,8 @@ This page takes you from nothing to a first shipped item. It takes about 15 minu
 | [Claude Code](https://claude.com/claude-code) (CLI or the desktop app's Code tab), signed in with your Claude subscription | runs everything | `claude --version` |
 | [Node.js](https://nodejs.org) 18 or newer, on your PATH | MNDX's hooks and CLI are Node scripts | `node --version` |
 | [Git](https://git-scm.com) | MNDX commits each shipped item locally | `git --version` |
-| [GitHub CLI](https://cli.github.com) | only to install MNDX from its private repo | `gh --version` |
 
-On Windows, the quickest way to get the last three:
+On Windows, the quickest way to get the last two:
 
 ```bash
 winget install --id OpenJS.NodeJS.LTS -e
@@ -19,25 +18,13 @@ winget install --id OpenJS.NodeJS.LTS -e
 ```bash
 winget install --id Git.Git -e
 ```
-```bash
-winget install --id GitHub.cli -e
-```
 
-Open a new terminal afterwards so they're on your PATH.
+Open a new terminal afterwards so they're on your PATH. The MNDX repo is public, so you don't need to sign in
+to GitHub to install it.
 
-## 2. Sign in to GitHub (private repo only)
+## 2. Set your Git identity
 
-```bash
-gh auth login
-```
-Choose **GitHub.com → HTTPS → Yes (authenticate Git) → Login with a web browser**, then paste the one-time code
-at github.com/login/device. Then connect plain `git` to that login:
-
-```bash
-gh auth setup-git
-```
-
-Set your Git identity once per PC (MNDX's `/mndx:ship` commits with it):
+Once per PC (MNDX's `/mndx:ship` commits with it):
 
 ```bash
 git config --global user.name "mndthenerd"
