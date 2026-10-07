@@ -11,7 +11,14 @@ and so on. They're listed with reasons in [`config/skills.json`](../config/skill
 | See what's installed | `/mndx:skills list` |
 | Install everything | `/mndx:skills install all` |
 | Install some groups | `/mndx:skills install core security web` |
-| Update all (same as `npx skills update -g`) | `/mndx:skills update` |
+| Update all, reviewed (snapshot → `npx skills update -g` → change report + risk scan) | `/mndx:skills update` |
+| Undo an update (latest snapshot, or the named one and skills) | `/mndx:skills rollback [snapshot] [skills…]` |
+
+**Why updates are reviewed:** an update can change instructions Claude follows. Before updating, MNDX copies every
+recommended skill to `~/.claude/mndx-skill-snapshots/<timestamp>/`. After updating, it lists each skill that changed
+and flags lines the update **introduced** that push or deploy, pipe remote scripts into a shell, override
+instructions, send secrets anywhere, delete broadly, or change permissions, plus any new script files. Lines that
+were already there aren't re-flagged. If something looks wrong, roll back.
 
 They install **globally** into `~/.claude/skills` with the open-source `npx skills` CLI. Its anonymous telemetry
 is switched off (`DISABLE_TELEMETRY=1`). New skills load from the **next** Claude Code session.

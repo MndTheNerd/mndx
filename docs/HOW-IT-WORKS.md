@@ -30,6 +30,8 @@ The internals: hooks, state, the approval hash, the CLI. For the design rational
 | `scripts/lib.js` | State, hashing, approval and item logic shared by everything |
 | `scripts/mndx.js` | The CLI Claude uses (new item, stage, check, done, route, skills…) |
 | `scripts/check.js` | `mndx.js check` + the ship rules: real quality-bar runs, code fingerprint, verify.md PASS + live run |
+| `scripts/scope.js`, `scopehook.js` | **PostToolUse (edits):** warns when a feature's edit is outside its plan's Files table; `mndx.js scope` |
+| `scripts/skillreview.js` | snapshot / diff / risk scan / rollback for `mndx.js skills update` |
 | `scripts/watch.js` | **Pre/PostToolUse (Bash, PowerShell):** the shell watchdog, which flags code changed through the shell while the gate is closed |
 | `scripts/route.js` | The concern router's deterministic pass |
 | `scripts/skills.js` | Community skills install/update via `npx skills` |
@@ -56,7 +58,8 @@ No dependencies: plain Node 18+.
 }
 ```
 
-Kinds and the docs each needs approved: **feature** → spec, plan · **fix** → bug · **chore** → chore.
+Kinds and the docs each needs approved: **feature** → spec, plan · **fix** → bug · **chore** → chore ·
+**release** → release (ships only when the version agrees in release.md, CHANGELOG and package.json).
 Stages: the doc being written (`spec`/`plan`/`bug`/`chore`), then `build` → `verify` → `ship`.
 
 ## The gate's rules (`gate.js`)

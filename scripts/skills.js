@@ -7,6 +7,7 @@ const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { MndxError } = require('./lib');
+const review = require('./skillreview');
 
 const MANIFEST = path.join(__dirname, '..', 'config', 'skills.json');
 const GROUPS = ['core', 'security', 'payments', 'ops', 'web', 'mobile', 'backend'];
@@ -19,7 +20,7 @@ function loadManifest() {
 
 // Where Claude Code looks for user and project skills.
 function skillDirs(cwd) {
-  return [path.join(os.homedir(), '.claude', 'skills'), path.join(cwd, '.claude', 'skills')];
+  return [process.env.MNDX_SKILLS_HOME || path.join(os.homedir(), '.claude', 'skills'), path.join(cwd, '.claude', 'skills')];
 }
 
 function isInstalled(name, cwd) {
@@ -86,9 +87,21 @@ function install(cwd, args) {
   return summary;
 }
 
-function update(cwd) {
-  if (!npxSkills(['update', '-g', '-y'])) throw new MndxError('npx skills update failed (see output above).');
-  return list(cwd);
+// Snapshot → update → report what changed and flag risky new instructions. `runner` is injectable for tests.
+function update(cwd, runner = () => npxSkills(['update', '-g', '-y'])) {
+  const id = review.snapshot(loadManifest().map((s) => s.name));
+  if (!runner()) throw new MndxError(`npx skills update failed (see output above). Snapshot kept: ${id}`);
+  return review.formatReport(id, review.diff(id));
 }
 
-module.exports = { MANIFEST, GROUPS, loadManifest, isInstalled, selectGroups, list, install, update };
+function rollback(args) {
+  const [id = review.latestSnapshot(), ...names] = args;
+  if (!id) throw new MndxError('No skill snapshots yet. They are taken by `mndx.js skills update`.');
+  try {
+    return `Rolled back from snapshot ${id}: ${review.rollback(id, names).join(', ')}. Start a new session to load them.`;
+  } catch (err) {
+    throw new MndxError(err.message);
+  }
+}
+
+module.exports = { MANIFEST, GROUPS, loadManifest, isInstalled, selectGroups, list, install, update, rollback };

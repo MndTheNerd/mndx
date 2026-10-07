@@ -20,6 +20,7 @@ const KINDS = {
   feature: { docs: ['spec', 'plan'], templates: ['spec.md', 'plan.md', 'verify.md'], folder: 'features' },
   fix: { docs: ['bug'], templates: ['bug.md', 'verify.md'], folder: 'fixes' },
   chore: { docs: ['chore'], templates: ['chore.md'], folder: 'chores' },
+  release: { docs: ['release'], templates: ['release.md'], folder: 'releases' },
 };
 const POST_APPROVAL_STAGES = ['build', 'verify', 'ship'];
 
@@ -107,6 +108,7 @@ function approvalStatus(root, item) {
 function nextCommandFor(item, doc) {
   if (doc === 'spec') return '/mndx:spec';
   if (doc === 'plan') return '/mndx:plan';
+  if (item.kind === 'release') return '/mndx:release';
   return item.kind === 'fix' ? '/mndx:fix' : '/mndx:chore';
 }
 
