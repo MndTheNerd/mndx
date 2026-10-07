@@ -9,6 +9,7 @@ const lib = require('./lib');
 const skills = require('./skills');
 const route = require('./route');
 const check = require('./check');
+const scope = require('./scope');
 
 const USAGE = `Usage: node mndx.js <command> [args]
 
@@ -19,6 +20,7 @@ const USAGE = `Usage: node mndx.js <command> [args]
   stage <build|verify|ship> Move the active item forward (only once its docs are approved;
                             ship also needs a green, current check and a PASS verify.md)
   check                     Run CLAUDE.md's quality-bar commands for real and record the results
+  scope                     List files edited outside the active feature's plan (## Files)
   done [note...]            Close the active item as shipped (must be at stage "ship")
   abandon [reason...]       Close the active item without shipping (docs are kept)
   approve [doc]             Autopilot only: approve the next doc after review
@@ -63,6 +65,10 @@ function describe(root, state) {
     const failed = record.results.filter((r) => r.code !== 0).map((r) => r.name);
     const current = record.fingerprint === check.fingerprint(root);
     lines.push(`Last check: ${record.at.slice(0, 16).replace('T', ' ')} — ${failed.length ? 'FAILED: ' + failed.join(', ') : 'all green'}${current ? '' : ' (code changed since)'}`);
+  }
+  if (state.active) {
+    const extra = scope.outOfScope(root, state.active.id);
+    if (extra.length) lines.push(`Out-of-plan edits (${extra.length}): ${extra.join(', ')}. List them as deviations in verify.md.`);
   }
   if (state.active && state.active.stage === 'ship') {
     const blocker = check.shipBlocker(root, state.active);
@@ -156,6 +162,15 @@ function main(argv) {
       if (state.active) state.active.autopilot = false;
       lib.writeState(root, state);
       return `Autopilot ended (${outcome}). Approvals are back to the user.`;
+    }
+    case 'scope': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      if (!state.active) return 'No active item.';
+      const extra = scope.outOfScope(root, state.active.id);
+      return extra.length
+        ? `Edited outside ${state.active.id}'s plan:\n  ${extra.join('\n  ')}`
+        : `No edits outside ${state.active.id}'s plan.`;
     }
     case 'check': {
       const root = requireRoot();

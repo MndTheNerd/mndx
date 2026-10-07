@@ -1,5 +1,5 @@
 {
-  "description": "MNDX: session context (SessionStart), the hard gate on code edits (PreToolUse), the shell watchdog (Pre/PostToolUse on Bash and PowerShell), and approvals only from user-typed /mndx:approve and /mndx:autopilot (UserPromptExpansion).",
+  "description": "MNDX: session context (SessionStart), the hard gate on code edits (PreToolUse), the shell watchdog (Pre/PostToolUse on Bash and PowerShell), plan-scope warnings (PostToolUse on edits), and approvals only from user-typed /mndx:approve and /mndx:autopilot (UserPromptExpansion).",
   "hooks": {
     "SessionStart": [
       {
@@ -27,6 +27,12 @@
         "matcher": "Bash|PowerShell",
         "hooks": [
           { "type": "command", "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/watch.js"], "timeout": 30 }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          { "type": "command", "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/scopehook.js"], "timeout": 15 }
         ]
       }
     ],

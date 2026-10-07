@@ -3,6 +3,13 @@
 All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions:
 [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Plan-scope warnings:** a PostToolUse hook warns Claude (never blocks) when an approved feature's edit lands
+  outside plan.md's `## Files` table, and logs it to `.mndx/scope.log`. `mndx.js scope` and `/mndx:status` list such
+  files; verify must explain each under "Deviations from the plan", and the code reviewer treats unexplained ones as major.
+
 ## [0.3.0] - 2026-10-07
 
 ### Added

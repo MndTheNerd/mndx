@@ -63,8 +63,12 @@ For each finding:
 - **disagree:** say why, in one line
 
 ## 7. Record
+Run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" scope`. Every file it lists was edited outside the plan's Files table
+and **must** appear under "Deviations from the plan" with a one-line reason. If any of them changed behavior or
+design, that's not a deviation: the plan needed re-approval, so stop and fix that first.
+
 Fill in the item's `verify.md`: quality bar (from `check`), AC→test traceability, **live run**, concern
-checklists, every review finding with its resolution, manual checks, and any small deviations from the plan.
+checklists, every review finding with its resolution, manual checks, and deviations from the plan.
 **Verdict:** write PASS only if the last `check` is green and current, every AC is proven by a test **and** the
 live run, and every blocker/major finding is fixed.
 

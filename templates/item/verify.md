@@ -36,6 +36,10 @@
 | # | Severity | Finding | Resolution |
 |---|---|---|---|
 
+## Deviations from the plan
+<!-- Every file from `mndx.js scope` (edited outside plan.md's Files table), plus any other mechanical deviation,
+     each with a one-line reason. Behavior or design changes are not deviations: they need plan re-approval. -->
+
 ## Manual checks
 <!-- Anything that still needs a human (real device, ⚖ decisions), and its status. -->
 

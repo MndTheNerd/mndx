@@ -7,6 +7,6 @@
   "repository": "https://github.com/MndTheNerd/mndx",
   "engines": { "node": ">=18" },
   "scripts": {
-    "test": "node --test scripts/test/mndx.test.js scripts/test/skills.test.js scripts/test/session.test.js scripts/test/check.test.js scripts/test/watch.test.js"
+    "test": "node --test scripts/test/mndx.test.js scripts/test/skills.test.js scripts/test/session.test.js scripts/test/check.test.js scripts/test/watch.test.js scripts/test/scope.test.js"
   }
 }
