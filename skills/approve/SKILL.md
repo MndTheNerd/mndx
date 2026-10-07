@@ -14,6 +14,7 @@ blocks the command itself if approval wasn't possible.
 2. Reply in one or two lines with what's approved and the next command:
    - spec approved: next is `/mndx:plan`
    - plan, bug or chore approved: the code gate is open, so next is `/mndx:build`
+   - release approved: the gate is open, so continue with step 3 of `/mndx:release`
 3. Don't start the next step unless the user asked for it in the same message (for example "approve and continue").
 
 Never edit `.mndx/` and never re-record approvals yourself.

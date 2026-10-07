@@ -127,6 +127,7 @@ function shipBlocker(root, item) {
   if (approvedAt && record.at < approvedAt) return 'The recorded checks are older than this item\'s approval. Run `mndx.js check`.';
   if (record.fingerprint !== fingerprint(root)) return 'Code changed since the last `mndx.js check`. Run it again.';
 
+  if (item.kind === 'release') return releaseBlocker(root, item);
   if (item.kind === 'chore') return null;
   const verifyFile = path.join(root, item.dir, 'verify.md');
   if (!fs.existsSync(verifyFile)) return `${item.dir}/verify.md is missing. Run /mndx:verify.`;
@@ -138,4 +139,35 @@ function shipBlocker(root, item) {
   return null;
 }
 
-module.exports = { CHECKS_FILE, parseQualityBar, codeFiles, fingerprint, runChecks, formatRecord, readRecord, sectionContent, shipBlocker, isGitRepo };
+const SEMVER = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
+
+/** The version a release item declares in release.md (`> Version: x.y.z`), or null. */
+function releaseVersion(root, item) {
+  const file = path.join(root, item.dir, 'release.md');
+  if (!fs.existsSync(file)) return null;
+  const m = fs.readFileSync(file, 'utf8').match(/^>\s*Version:\s*v?(\S+)\s*$/m);
+  return m && SEMVER.test(m[1]) ? m[1] : null;
+}
+
+// A release ships only when the version is real and consistent everywhere it's recorded.
+function releaseBlocker(root, item) {
+  const version = releaseVersion(root, item);
+  if (!version) return 'release.md has no valid "> Version: x.y.z" line.';
+  const changelogFile = path.join(root, 'CHANGELOG.md');
+  const changelog = fs.existsSync(changelogFile) ? fs.readFileSync(changelogFile, 'utf8') : '';
+  const esc = version.replace(/[.+-]/g, '\\$&');
+  if (!new RegExp(`^##\\s+\\[${esc}\\]\\s+-\\s+\\d{4}-\\d{2}-\\d{2}`, 'm').test(changelog)) {
+    return `CHANGELOG.md has no "## [${version}] - YYYY-MM-DD" section.`;
+  }
+  if (!/^##\s+\[Unreleased\]/m.test(changelog)) return 'CHANGELOG.md needs a fresh empty "## [Unreleased]" section above the release.';
+  const pkg = path.join(root, 'package.json');
+  if (fs.existsSync(pkg)) {
+    let declared;
+    try { declared = JSON.parse(fs.readFileSync(pkg, 'utf8')).version; } catch { return 'package.json is not valid JSON.'; }
+    if (declared !== version) return `package.json version is ${declared}, but the release is ${version}.`;
+  }
+  return null;
+}
+
+module.exports = {
+  releaseVersion, CHECKS_FILE, parseQualityBar, codeFiles, fingerprint, runChecks, formatRecord, readRecord, sectionContent, shipBlocker, isGitRepo };

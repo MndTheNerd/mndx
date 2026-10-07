@@ -77,7 +77,8 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
 | `/mndx:chore <task>` | Small non-feature work |
 | `/mndx:status` | Where you are and the exact next step |
 | `/mndx:route <task>` | Which concerns, checklists and skills a task needs |
-| `/mndx:skills [list\|install\|update]` | Manage the community skills |
+| `/mndx:release [version] [deploy]` | Gated release: version, changelog, check, local tag; deploys only if asked |
+| `/mndx:skills [list\|install\|update\|rollback]` | Manage the community skills (updates are snapshotted and risk-scanned) |
 | `/mndx:approve [doc]` | **You only.** Approve the waiting doc |
 | `/mndx:abandon [reason]` | **You only.** Drop the active item |
 | `/mndx:autopilot <goal\|stop>` | **You only.** Run everything unattended |

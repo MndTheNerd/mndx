@@ -48,6 +48,7 @@ Until you approve the spec and plan, Claude **can't** edit code. A hook enforces
 | `/mndx:chore <task>` | you | Small non-feature work (deps, config, tooling) |
 | `/mndx:status` | you / Claude | Where am I, and the exact next command |
 | `/mndx:route <task>` | you / Claude | Which concerns, checklists and skills a task needs |
+| `/mndx:release [version\|major\|minor\|patch] [deploy]` | you | Gated release: release.md → approve → bump + changelog + check + local tag; deploys only if asked |
 | `/mndx:skills [list\|install\|update]` | you | Manage community skills |
 | `/mndx:approve [doc]` | **you only** | Approve the waiting doc |
 | `/mndx:abandon [reason]` | **you only** | Drop the active item (docs are kept) |
@@ -109,6 +110,24 @@ repro, root cause, fix plan, regression test, blast radius). You approve, and th
 
 **`/mndx:chore <task>`**: dependency bumps, config, renames, tooling. A one-paragraph `chore.md` → approve →
 `/mndx:build` → `/mndx:ship`. If the "chore" turns out to change what users see, Claude turns it into a spec.
+
+## Releases
+
+`/mndx:release` turns the changelog's `[Unreleased]` into a version. It's a gated item like any other:
+1. Claude proposes the version (SemVer from the changelog: breaking → major, Added/Changed → minor, only fixes →
+   patch) and writes `docs/releases/NNN-vX.Y.Z/release.md` with what's in it, a readiness checklist and a rollback plan.
+2. You approve. Claude bumps the version in the manifest, finalizes CHANGELOG, runs `mndx.js check`, ships the item,
+   commits `chore(release): vX.Y.Z` and creates a **local** tag.
+3. `stage ship` refuses unless the version agrees in release.md, CHANGELOG (with a fresh `[Unreleased]`) and
+   package.json, on a green, current check.
+4. **Deploy only if you asked** (`/mndx:release minor deploy`), using the command in `docs/RUNBOOK.md`, followed by a
+   smoke check. Nothing is pushed: Claude gives you `git push && git push --tags` to run when you're ready.
+
+## Scope warnings
+
+While building, every edit is compared with the plan's **Files** table. An edit outside it isn't blocked, but Claude
+is warned right away and the file is logged. `/mndx:status` shows them, and verify has to explain each one under
+"Deviations from the plan". Anything that changes behavior means the plan goes back to you for re-approval.
 
 ## Approving, re-approving, abandoning
 

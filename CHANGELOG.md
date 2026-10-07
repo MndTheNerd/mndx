@@ -5,7 +5,17 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-07
+
 ### Added
+- **`/mndx:release`:** releases are a new gated item kind (`release.md`: version, notes, readiness, rollback). After
+  approval, Claude bumps the version, finalizes CHANGELOG, runs the check and tags locally. `stage ship` refuses unless
+  the version agrees in release.md, CHANGELOG (with a fresh `[Unreleased]`) and package.json. Deploys happen only when
+  the user asks, using the runbook command plus a smoke check. Nothing is ever pushed automatically.
+- **Reviewed skill updates:** `mndx.js skills update` snapshots the recommended skills, updates, then reports
+  changed skills and flags risky lines the update introduced (push/deploy, `curl | sh`, instruction overrides,
+  exfiltration, destructive commands, permission changes, new scripts). `mndx.js skills rollback [snapshot] [skills]`
+  restores them.
 - **Plan-scope warnings:** a PostToolUse hook warns Claude (never blocks) when an approved feature's edit lands
   outside plan.md's `## Files` table, and logs it to `.mndx/scope.log`. `mndx.js scope` and `/mndx:status` list such
   files; verify must explain each under "Deviations from the plan", and the code reviewer treats unexplained ones as major.

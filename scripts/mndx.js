@@ -31,7 +31,9 @@ const USAGE = `Usage: node mndx.js <command> [args]
   skills [list]             Show recommended community skills and which are installed
   skills install [core|web|mobile|backend|all]
                             Install them globally via npx skills (default: all)
-  skills update             Update all globally installed skills (npx skills update)
+  skills update             Snapshot, update (npx skills update), then report changes + risky new lines
+  skills rollback [snapshot] [skills...]
+                            Restore skills from a snapshot (default: the latest)
 `;
 
 function requireRoot() {
@@ -192,7 +194,8 @@ function main(argv) {
       if (sub === 'list') return skills.list(process.cwd());
       if (sub === 'install') return skills.install(process.cwd(), groups);
       if (sub === 'update') return skills.update(process.cwd());
-      throw new lib.MndxError(`Unknown skills command "${sub}" (expected: list, install, update).`);
+      if (sub === 'rollback') return skills.rollback(groups);
+      throw new lib.MndxError(`Unknown skills command "${sub}" (expected: list, install, update, rollback).`);
     }
     case undefined:
     case 'help':
