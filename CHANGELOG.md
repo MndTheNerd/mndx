@@ -5,6 +5,13 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+### Changed
+- **`/mndx:build` now ends each task with a bounded refactor** (red → green → refactor). After the tests pass,
+  Claude makes one pass over just the code it wrote for that task (duplication, names, convoluted logic), then
+  re-runs the same tests and typecheck. No new behavior, no new tests, nothing outside the task's files, and a
+  refactor that turns a test red is undone. The `tdd` skill leaves refactoring to review, so cleanup used to
+  wait for a reviewer to flag it.
+
 ## [0.5.0] - 2026-10-07
 
 ### Changed
