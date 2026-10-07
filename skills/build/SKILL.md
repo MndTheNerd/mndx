@@ -27,7 +27,16 @@ For each unchecked task:
    test from `bug.md` always comes first and must fail before the fix.
 2. Write the smallest clean implementation that passes them. Reuse what exists and match the surrounding code.
 3. Run the tests for the area you changed, plus the typecheck. Fix it until it's green before moving on.
-4. Tick the task in `plan.md` (`- [x]`). Checkbox state is ignored by the approval hash. Changing anything
+4. **Refactor, once and bounded** (red → green → refactor). With everything green, look only at the code you
+   just wrote or touched in this task: remove duplication, fix unclear names, simplify what's convoluted. Then
+   run the same tests and typecheck again. Rules:
+   - **No new behavior and no new tests.** A refactor that needs either belongs to another task.
+   - **Stay inside the task's files.** Don't tidy unrelated code, and don't change what the plan says.
+   - **One pass.** If nothing needs improving, skip it without comment. If a refactor turns a test red,
+     undo it, don't "fix forward".
+   - This is on top of the `tdd` skill, which leaves refactoring to review. MNDX overrides it here: cleaning up
+     while the intent is fresh costs less than a review finding later.
+5. Tick the task in `plan.md` (`- [x]`). Checkbox state is ignored by the approval hash. Changing anything
    else in an approved doc closes the gate.
 
 ## 3. While building

@@ -82,8 +82,9 @@ test**, **concern coverage** (a design decision + proof per concern), risks, and
 **Your job:** read the plan, then `/mndx:approve`. This opens the code gate.
 
 ### `/mndx:build`
-Test-first, one vertical slice at a time (the `tdd` skill), at the seams the plan named. Each task gets ticked off
-in `plan.md`. Ticking boxes doesn't count as changing the plan. If the plan turns out to be wrong, Claude
+Test-first, one vertical slice at a time (the `tdd` skill), at the seams the plan named: red (a failing test),
+green (the smallest code that passes), then one bounded refactor of just that task's code with the tests kept
+green. Each task gets ticked off in `plan.md`. Ticking boxes doesn't count as changing the plan. If the plan turns out to be wrong, Claude
 **stops and tells you**. The plan gets updated and re-approved rather than silently changed.
 
 ### `/mndx:verify`

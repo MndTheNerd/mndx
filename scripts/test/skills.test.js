@@ -152,3 +152,14 @@ test('every reviewer agent declares a model, so reviews never silently run on th
     assert.match(frontmatter[1], /^model:\s*(sonnet|opus|haiku|inherit)\s*$/m, `${f}: needs model: sonnet|opus|haiku|inherit`);
   }
 });
+test('the build skill ends each task with a bounded refactor, then re-runs the tests', () => {
+  const build = fs.readFileSync(path.join(ROOT, 'skills', 'build', 'SKILL.md'), 'utf8').replace(/\r\n/g, '\n');
+  const step = build.match(/^\d+\. \*\*Refactor[\s\S]*?(?=^\d+\. )/m);
+  assert.ok(step, 'build skill needs a Refactor step in the per-task loop');
+  assert.match(step[0], /no new behavior/i);
+  assert.match(step[0], /re-?run|run the same tests/i);
+  assert.match(step[0], /undo/i, 'a refactor that turns a test red must be undone');
+  // It must come after "make it green" and before the task is ticked off.
+  assert.ok(build.indexOf('Refactor, once') > build.indexOf('Run the tests for the area'));
+  assert.ok(build.indexOf('Refactor, once') < build.indexOf('Tick the task'));
+});
