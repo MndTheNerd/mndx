@@ -5,6 +5,16 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-07
+
+### Changed
+- **Reviewer agents run on Sonnet by default** (`model: sonnet` in `spec-reviewer`, `code-reviewer` and
+  `project-auditor`). They used to inherit the session's model, so every review ran on the most expensive one.
+  Reviews are the largest token cost of a run: a full feature used about 15 reviewer passes of 25k–95k tokens
+  each. They only read and report, so a cheaper model does the job. Set `model: opus` (or `inherit`) in an
+  agent file to restore the old behavior, for example for a security-critical codebase. See
+  [CUSTOMIZING.md](docs/CUSTOMIZING.md).
+
 ## [0.4.2] - 2026-10-07
 
 ### Fixed

@@ -15,6 +15,7 @@ MNDX is opinionated so you don't start from zero, but the opinions are plain Mar
 | Change the project docs `/mndx:init` writes | `templates/project/*.md` |
 | Change how a step behaves | `skills/<step>/SKILL.md` |
 | Make a reviewer stricter or softer | `agents/spec-reviewer.md`, `agents/code-reviewer.md` |
+| Change the model the reviewers run on (cost vs depth) | the `model:` line in `agents/spec-reviewer.md`, `code-reviewer.md`, `project-auditor.md`: `sonnet` (default), `opus`, `haiku` or `inherit` |
 | Change the pipeline's hard rules | `skills/workflow/SKILL.md` |
 | Change what the gate enforces | `scripts/gate.js` + `scripts/lib.js`, **and add a test** |
 
