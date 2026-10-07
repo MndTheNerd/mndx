@@ -141,3 +141,14 @@ test('router output names checklists and skill install status', () => {
   assert.ok(r.skills.some((s) => s.name === 'stripe-best-practices' && typeof s.installed === 'boolean'));
   assert.match(route.format(route.route('accept payments')), /Payments & billing/);
 });
+
+test('every reviewer agent declares a model, so reviews never silently run on the most expensive one', () => {
+  const dir = path.join(ROOT, 'agents');
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md'));
+  assert.ok(files.length >= 3, 'expected the reviewer agents');
+  for (const f of files) {
+    const frontmatter = fs.readFileSync(path.join(dir, f), 'utf8').replace(/\r\n/g, '\n').match(/^---\n([\s\S]*?)\n---/);
+    assert.ok(frontmatter, `${f}: missing frontmatter`);
+    assert.match(frontmatter[1], /^model:\s*(sonnet|opus|haiku|inherit)\s*$/m, `${f}: needs model: sonnet|opus|haiku|inherit`);
+  }
+});
