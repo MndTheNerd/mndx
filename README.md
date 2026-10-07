@@ -18,6 +18,8 @@ idea ─► route ─► spec ─► ✋ you approve ─► plan ─► ✋ you 
 - 🧰 **45 curated community skills** from [skills.sh](https://skills.sh/), from Stripe, Expo, Vercel, Anthropic,
   Supabase, Microsoft, Sentry, Trail of Bits and others, kept current with `npx skills update`.
 - 🔍 **Independent reviewers:** fresh-context agents critique every spec and every change.
+- 🏚️ **Existing projects:** MNDX learns the whole codebase, audits it with evidence, then lets you choose to
+  **rebuild it the right way**, **fix what needs fixing**, or **keep it and continue**.
 - 🤖 **Autopilot:** `/mndx:autopilot <goal>` runs the whole pipeline unattended and ends with an honest report.
 - 💳 Runs **entirely on your Claude subscription**, inside Claude Code. No API keys, no servers.
 
@@ -47,6 +49,9 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
       → interview → PRODUCT.md, ARCHITECTURE.md, stack ADR, CLAUDE.md (quality bar), setup chore
 /mndx:approve   /mndx:build   /mndx:ship                 → scaffolded app, green quality bar, first commit
 
+/mndx:init                       (in a folder with existing code)
+      → learns the project, runs its tests, ASSESSMENT.md → you choose: rebuild · fix · keep
+
 /mndx:spec streaks with a one-day grace period           → routed concerns + spec with numbered ACs + review
 /mndx:approve
 /mndx:plan                                               → tasks, a test per AC, a proof per concern
@@ -58,7 +63,8 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
 
 | Command | What it does |
 |---|---|
-| `/mndx:init [idea]` | Set up a new or existing project |
+| `/mndx:init [idea]` | New project: interview → docs → setup chore. Existing code: learn → audit → rebuild / fix / keep |
+| `/mndx:assess [focus]` | Re-audit an existing codebase and choose again |
 | `/mndx:spec <idea>` | Start a feature: routed concerns + a spec with testable acceptance criteria |
 | `/mndx:plan` | Technical plan for the approved spec |
 | `/mndx:build` | Implement the approved plan, test-first |
@@ -79,6 +85,7 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
 |---|---|
 | [Getting started](docs/GETTING-STARTED.md) | install on any PC, first project, first feature |
 | [User guide](docs/GUIDE.md) | every command and step in depth, what MNDX creates, tips |
+| [Existing projects](docs/EXISTING-PROJECTS.md) | learn → audit → rebuild / fix / keep, and the backlog |
 | [Autopilot](docs/AUTOPILOT.md) | unattended runs, stop rules, permission setup |
 | [Production concerns](docs/CONCERNS.md) | the router, the 20 concerns, legal/compliance, extending it |
 | [Community skills](docs/SKILLS.md) | the 45 skills, why each was chosen, adding more |
@@ -93,9 +100,9 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
 ```
 .claude-plugin/   plugin.json, marketplace.json
 skills/           /mndx:* commands, reference playbooks (workflow, quality-bar, stack-*), route, concerns/ checklists
-agents/           spec-reviewer, code-reviewer (fresh context, report-only)
-hooks/hooks.json  PreToolUse gate + UserPromptExpansion approvals
-scripts/          lib.js, mndx.js (CLI), gate.js, approve.js, route.js, skills.js, test/
+agents/           spec-reviewer, code-reviewer, project-auditor (fresh context, report-only)
+hooks/hooks.json  SessionStart context + PreToolUse gate + UserPromptExpansion approvals
+scripts/          lib.js, mndx.js (CLI), gate.js, approve.js, session.js, route.js, skills.js, test/
 config/           skills.json (community skills), concerns.json (router taxonomy)
 templates/        project docs and per-item docs
 docs/             the guides above

@@ -37,7 +37,8 @@ Until you approve the spec and plan, Claude **can't** edit code. A hook enforces
 
 | Command | Who | What |
 |---|---|---|
-| `/mndx:init [idea]` | you | Set up a project: product, architecture, stack ADR, quality bar, setup chore |
+| `/mndx:init [idea]` | you | New project: interview, stack, docs, quality bar, setup chore. Existing code: learn → audit → rebuild / fix / keep |
+| `/mndx:assess [focus]` | you | (Re-)audit an existing codebase and choose rebuild / fix / keep |
 | `/mndx:spec <idea>` | you | Start a feature and write its spec |
 | `/mndx:plan` | you | Write the plan for the approved spec |
 | `/mndx:build` | you | Implement the approved plan |
@@ -131,6 +132,8 @@ docs/
   ARCHITECTURE.md                living architecture
   DESIGN-SYSTEM.md               tokens and visual rules (UI projects)
   PRIVACY.md                     personal-data inventory (if any)
+  BACKLOG.md                     ordered list of what's next (status/ship suggest its top line)
+  ASSESSMENT.md, REBUILD.md      existing projects: audit results, rebuild plan
   RUNBOOK.md                     deploy / rollback / restore (when hosting exists)
   adr/0001-stack.md …            decisions and their reasons
   features/NNN-slug/             spec.md  plan.md  verify.md
@@ -143,11 +146,15 @@ Commit all of it, including `.mndx/state.json`. Then the project carries its ful
 
 ## Existing projects
 
-Run `/mndx:init` in an existing codebase. Claude reads the code first and **documents what's there** (actual
-architecture, actual commands) instead of inventing it. If the quality bar has gaps (no tests, no linter,
-no typecheck), it creates a chore to add them. To find structural improvements, run
-`/improve-codebase-architecture` (a community skill) and turn what you like into `/mndx:chore` or `/mndx:spec`
-items.
+Run `/mndx:init` in a folder that already has code. Claude **learns the whole project** (reads it, runs its real
+tests and build), documents what really exists, has the `project-auditor` agent score it with file:line
+evidence, and then asks you to choose one of three:
+
+- **Rebuild it the right way**, incrementally or fresh alongside, with parity specs so nothing is lost
+- **Fix what needs fixing**, as a risk-ordered backlog of fix and chore items
+- **Keep as-is and continue**, adopting it now and keeping the findings for later
+
+Re-run the audit any time with `/mndx:assess`. Full details: [EXISTING-PROJECTS.md](EXISTING-PROJECTS.md).
 
 ## Tips
 

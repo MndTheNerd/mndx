@@ -16,13 +16,15 @@ The internals: hooks, state, the approval hash, the CLI. For the design rational
 │                                                                           │
 │  Claude runs: node scripts/mndx.js new|status|stage|done|route|skills …    │
 │  Skills (skills/*/SKILL.md) tell Claude what to do at each step            │
-│  Agents (agents/*.md) review docs and code in a fresh context              │
+│  Agents (agents/*.md) review docs, code and whole projects, fresh context   │
+│  Session start ──► SessionStart hook ──► scripts/session.js ──► context    │
 └───────────────────────────────────────────────────────────────────────────┘
 ```
 
 | File | Role |
 |---|---|
-| `hooks/hooks.json` | Registers the two hooks with Claude Code |
+| `hooks/hooks.json` | Registers the three hooks with Claude Code |
+| `scripts/session.js` | **SessionStart:** tells Claude the active item, gate and next backlog item; hints `/mndx:init` in un-adopted codebases (silenced by `.mndxignore`) |
 | `scripts/gate.js` | **PreToolUse:** decides whether an edit or shell command may run |
 | `scripts/approve.js` | **UserPromptExpansion:** the only writer of approvals and autopilot grants |
 | `scripts/lib.js` | State, hashing, approval and item logic shared by everything |

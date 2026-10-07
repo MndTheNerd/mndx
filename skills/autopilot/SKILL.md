@@ -42,10 +42,13 @@ CLI shorthand below: `mndx` means `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js"`
 
 0. `mndx status`. Note the start time. If the project isn't initialized, follow
    `${CLAUDE_PLUGIN_ROOT}/skills/init/SKILL.md` in its autopilot form. That creates and documents everything,
-   including the setup chore.
+   including the setup chore. For an **existing codebase**, init hands off to the assess skill's autopilot form:
+   learn, document and audit, fix critical/high security, data or money findings, otherwise keep, and **never
+   rebuild without the user**.
 1. **Break the goal down** into an ordered list of items (the setup chore if needed, then features and fixes),
-   each small enough to spec, build and verify in one pass. Add them to the v1 scope in `docs/PRODUCT.md`.
-   If an item is already active, finish it first.
+   each small enough to spec, build and verify in one pass. Write them into `docs/BACKLOG.md` (and the v1 scope in
+   `docs/PRODUCT.md`). If an item is already active, finish it first. If the goal is "work the backlog", take its
+   `todo` lines in order.
 2. **For each item**, follow the matching skill file in `${CLAUDE_PLUGIN_ROOT}/skills/`, skipping its hand-off
    step:
    - **feature:** `spec/SKILL.md`, where `mndx:spec-reviewer` is the gate. Fix the findings, re-review if there

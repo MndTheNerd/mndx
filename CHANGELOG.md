@@ -3,6 +3,19 @@
 All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions:
 [SemVer](https://semver.org/).
 
+## [0.2.0] - 2026-10-07
+
+### Added
+- **Existing-project adoption.** `/mndx:init` on existing code (and the new `/mndx:assess`) learns the whole
+  project, runs its real tests and build, documents what exists, audits it, and asks you to **rebuild it the right
+  way**, **fix what needs fixing**, or **keep it as-is and continue**. See [docs/EXISTING-PROJECTS.md](docs/EXISTING-PROJECTS.md).
+- `project-auditor` agent: a 15-area 0–3 scorecard, severity-ranked findings with file:line, what to keep, and
+  rebuild vs fix effort.
+- `docs/BACKLOG.md` as the ordered work queue, suggested by `/mndx:status`, `/mndx:ship` and the session hook.
+  Templates: ASSESSMENT.md, BACKLOG.md.
+- SessionStart hook: MNDX projects open with the active item, gate and next backlog item; un-adopted codebases
+  get a one-time `/mndx:init` hint (`.mndxignore` turns it off).
+
 ## [0.1.1] - 2026-10-07
 
 ### Added
