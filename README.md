@@ -26,7 +26,6 @@ idea ─► route ─► spec ─► ✋ you approve ─► plan ─► ✋ you 
 - 🤖 **Autopilot:** `/mndx:autopilot <goal>` runs the whole pipeline unattended and ends with an honest report.
 - 💳 Runs **entirely on your Claude subscription**, inside Claude Code. No API keys, no servers.
 
-Inspired by [OBX](https://obx.obytes.com/) from Obytes, built for one person instead of a team.
 
 ---
 
