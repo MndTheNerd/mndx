@@ -271,3 +271,18 @@ test('a corrupt state file fails closed', () => {
   assert.equal(res.allowed, false);
   assert.match(res.reason, /not valid JSON/);
 });
+
+test('review-mode defaults to quick, can be switched, persists and rejects other values', () => {
+  const dir = tmpProject();
+  assert.match(cli(dir, 'review-mode').out, /Review mode: quick \(default\)/);
+  assert.match(cli(dir, 'status').out, /Review mode: quick/);
+  assert.match(cli(dir, 'review-mode', 'full').out, /now full/);
+  assert.equal(state(dir).reviewMode, 'full');
+  assert.match(cli(dir, 'review-mode').out, /Review mode: full\s*$/);
+  assert.match(cli(dir, 'status').out, /Review mode: full/);
+  const bad = cli(dir, 'review-mode', 'turbo');
+  assert.notEqual(bad.code, 0);
+  assert.match(bad.err, /"quick" or "full"/);
+  assert.equal(state(dir).reviewMode, 'full', 'a rejected value leaves the mode alone');
+  assert.match(cli(dir, 'review-mode', 'quick').out, /now quick/);
+});

@@ -1,4 +1,5 @@
 <!-- mndx:template -->
+<!-- Size: a small feature fits on about a page. Delete a section with nothing to say, don't write "n/a". -->
 # {{ID}} — {{TITLE}}
 
 > **Status:** DRAFT

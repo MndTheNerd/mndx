@@ -5,6 +5,23 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-20
+
+### Added
+- **Quick and full review modes.** Quick is the default and the token-saving one: after a review with a blocker
+  or major finding, the re-review is a **delta check** (the numbered findings plus the diff, one line per finding)
+  instead of a second full read, and minor findings never trigger a re-review. Full mode re-reads everything on
+  every re-review. Switch with `node mndx.js review-mode quick|full`, or just tell Claude "use full reviews".
+  `status` shows the mode. Approvals, the verdict rule and verify's fresh full code review are the same in both.
+  The shared protocol is one new skill, `skills/reviews/SKILL.md`, which spec, verify and autopilot point at.
+  This is items 2 to 4 of [docs/TOKEN-SAVINGS.md](docs/TOKEN-SAVINGS.md).
+- A delta mode in `spec-reviewer` and `code-reviewer` (`MODE: DELTA`).
+
+### Changed
+- Reviewers read only what a finding needs instead of all project docs, and report padding as a minor finding.
+- The item templates carry a size note (a small item fits on a page, delete empty sections), and the build and
+  verify skills tell Claude to keep command output small (items 6 and 7 of the proposal).
+
 ## [0.6.0] - 2026-10-20
 
 ### Added

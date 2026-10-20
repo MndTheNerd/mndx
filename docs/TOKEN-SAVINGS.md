@@ -1,7 +1,8 @@
 # Token savings: spec
 
-> Status: **proposal**, for the owner to review. Nothing here is implemented except item 1, which is
-> [PR #6](https://github.com/MndTheNerd/mndx/pull/6).
+> Status: items 1 ([PR #6](https://github.com/MndTheNerd/mndx/pull/6)) and 2 to 4, 6 and 7 (0.7.0, as the
+> **quick review mode**, the default; `review-mode full` keeps full re-reviews) are implemented. Item 5 (a lighter
+> path for small items) is still a proposal, because it changes what verify requires.
 > Goal: a feature costs far fewer tokens to run through MNDX, **without weakening any gate**.
 
 ## Where the tokens went
@@ -95,7 +96,7 @@ installers aren't.
   example the last 15 lines, or only the failures), and to re-read a log only when something failed.
 
 ## Order and risk
-1. Item 1 (done, PR #6) and items 2–4 together: skill and agent text only, no code. Release as **0.6.0**.
+1. Item 1 (done, PR #6) and items 2–4 together: skill and agent text only, no code. Released as **0.7.0**.
 2. Items 5–7 next: item 5 changes what verify requires, so it needs its own review and a test that the full
    path still applies to product code.
 

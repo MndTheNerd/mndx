@@ -55,11 +55,14 @@ but it must be visible.
 must be listed in the ship summary (and in the autopilot report).
 
 ## 6. Independent review
-Launch the `mndx:code-reviewer` agent. Pass it the item folder, the Concerns table, and the list of changed files
-(`git diff --name-only` plus untracked files, or the plan's Files table if there's no git).
+Read `${CLAUDE_PLUGIN_ROOT}/skills/reviews/SKILL.md`, then launch the `mndx:code-reviewer` agent as a fresh full
+review. Pass it the item folder, the Concerns table, and the list of changed files
+(`git diff --name-only` plus untracked files, or the plan's Files table if there's no git). Run noisy commands
+(installs, test runners) with filtered output, such as the last 15 lines or only the failures, and re-read a log
+only when something failed.
 For each finding:
-- **blocker / major:** fix it (the gate is open), then run `check` again
-- **minor:** fix it, or note why not
+- **blocker / major:** fix it (the gate is open), run `check` again, then re-review as that skill says
+- **minor:** fix it, or note why not in one line. Minors never trigger a re-review
 - **disagree:** say why, in one line
 
 ## 7. Record

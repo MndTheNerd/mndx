@@ -40,8 +40,9 @@ Fill in every section of the item's `spec.md`, and remove the template marker an
 - Product-level only: describe behavior, not implementation. That goes in the plan.
 
 ## 4. Independent review
-Launch the `mndx:spec-reviewer` agent with the spec's path. Fix every **blocker** and **major** finding in the
-spec. For minor findings, apply or reject each one with a reason.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/reviews/SKILL.md`, then launch the `mndx:spec-reviewer` agent with the spec's
+path. Fix every **blocker** and **major** finding in the spec. For minor findings, apply or reject each one with
+a one-line reason. Re-review only as that skill says.
 
 ## 5. Hand off
 Show a short summary: the problem in one line, the AC list, what's out of scope, and any assumptions. Then:
