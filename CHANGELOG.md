@@ -5,6 +5,34 @@ All notable changes to MNDX. Format: [Keep a Changelog](https://keepachangelog.c
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-20
+
+### Added
+- **A new "Reliability & resilience" concern** (`reliability.md`) and checklists for the three concerns that had none:
+  **Backend & API** (`api.md`), **Performance & scale** (`performance.md`) and **Observability** (`observability.md`).
+  Together with new items in the security, auth, data, devops and infra checklists, they cover a 111-topic
+  engineering checklist that went viral ("what vibe coders miss"): rate limiting, idempotency, webhooks, realtime
+  transports, timeouts, retries and backoff, circuit breakers, queues and dead letters, sagas, race conditions,
+  locking, consistency, failover, caching, N+1, tail latency, cold starts, logging, SLOs, tracing, IAM, TLS, WAF,
+  JWT rotation, replicas and sharding, canary and blue-green deploys, feature flags, incidents and postmortems.
+  A test checks that every one of the 111 topics lives in a checklist, and the router has triggers for them.
+- **Complexity budget:** the scale-sensitive checklists say to meet an item only when the spec's numbers call for it,
+  and otherwise to write `n/a: <reason>`. Adding Kubernetes, sharding or a broker to look production-ready is a defect.
+- **Not limited to the curated skills.** Each concern can list `alsoConsider` skills from Claude Code and other plugins
+  (`security-review`, `engineering:*`, `design:*`, `legal:*`, `marketing:seo-audit`). The router prints them and the
+  route skill tells Claude to use a clearly better skill the session lists, at most one extra per concern.
+- **Evidence-first assessment of existing projects**, adapted from [REA](https://github.com/morluto/rea):
+  summary-first reading, findings tagged observed or inferred, bounded "not found" claims, a questions checklist
+  and a "not examined" section in `ASSESSMENT.md`.
+- **A safe path for projects with no source** (a shipped build only): ask about authorization first, analyze
+  statically, use the optional `reverse-engineer-anything` skill if installed, and never run an unknown binary
+  without the user's explicit OK.
+- The workflow now states the goal: production-level software with no known bugs, errors or security concerns, at the
+  fewest tokens that achieve it.
+
+### Fixed
+- The docs said there were 20 concerns, and the concerns table missed "Dates, times & scheduling". It's now 22.
+
 ## [0.5.1] - 2026-10-07
 
 ### Changed

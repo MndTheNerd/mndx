@@ -9,6 +9,9 @@ user-invocable: false
 MNDX turns Claude Code into a disciplined solo product team. Nothing gets built until it's understood,
 written down, and approved. "Product level" means typed, tested, reviewed, documented, and simple.
 
+**The goal:** production-level software with no known bugs, errors or security concerns, at the fewest tokens that
+achieve it. Never trade quality or a gate for tokens: read only what a decision needs, don't repeat work.
+
 ## The pipeline
 
 ```

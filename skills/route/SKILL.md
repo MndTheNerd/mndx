@@ -31,6 +31,13 @@ For each concern you keep:
 - Read its checklist from `${CLAUDE_PLUGIN_ROOT}/skills/concerns/` (if it has one).
 - Load its community skills that are installed (call the Skill tool with the skill name). Load them now if you're
   about to design or build; at spec time, skim them for requirements the spec should capture.
+- **The curated skills are a floor, not a ceiling, and tokens are a cost.** The goal is the best output, not loyalty to
+  a list. The router's "also consider" line names skills from Claude Code itself and other plugins
+  (`security-review`, `engineering:*`, `design:*`, `legal:*`, `marketing:seo-audit`, …). Look at the skills your
+  session actually lists (skip any it doesn't have). Load an extra skill only when it clearly fits this task better
+  than, or adds something beyond, the curated skills and the checklist, and load at most one per concern. For a small
+  or routine task, load none. When two skills overlap, prefer the more specific one. Note in the Concerns table what
+  you used.
 - **Missing skill:** tell the user `/mndx:skills install` adds it (under autopilot, note it in the report and continue).
 - **No concern fits** part of the task (a new domain, such as maps, video, blockchain or hardware): load
   `find-skills`, search the skills.sh leaderboard, and **recommend** the best-ranked option from a trusted

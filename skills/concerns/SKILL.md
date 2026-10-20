@@ -1,6 +1,6 @@
 ---
 name: concerns
-description: MNDX production-concern checklists (testing, security, UX, accessibility, data, auth, privacy/compliance/legal, payments, i18n, messaging, AI, devops, infra, app-store). Load the matching checklist whenever a spec, plan, build or verify step touches that concern.
+description: MNDX production-concern checklists (testing, security, UX, accessibility, data, auth, privacy/compliance/legal, payments, i18n, messaging, AI, API, performance, observability, reliability, devops, infra, app-store). Load the matching checklist whenever a spec, plan, build or verify step touches that concern.
 user-invocable: false
 ---
 
@@ -28,7 +28,17 @@ Every MNDX item is routed to the concerns it touches (see the `route` skill). Ea
 | CI/CD & release | [devops.md](devops.md) | `ci-cd-and-automation`, `gha-security-review`, `shipping-and-launch` |
 | Infrastructure & hosting | [infra.md](infra.md) | `shipping-and-launch` |
 | App store release | [app-store.md](app-store.md) | `apple-appstore-reviewer`, `expo-overview` |
-| Web frontend / Mobile / API / Performance / SEO / Observability | the community skills (see `config/concerns.json`) | |
+| Backend & API | [api.md](api.md) | `api-and-interface-design`, `fastify-best-practices`, `node` |
+| Performance & scale | [performance.md](performance.md) | `performance-optimization`, `core-web-vitals`, `vercel-react-best-practices` |
+| Observability | [observability.md](observability.md) | `observability-and-instrumentation`, `secret-serialization` |
+| Reliability & resilience | [reliability.md](reliability.md) | none |
+| Web frontend / Mobile / SEO | the community skills (see `config/concerns.json`) | |
+
+## Complexity budget
+The reliability, performance, infra and data checklists describe patterns for products that need them. A pattern is
+in scope only when the spec's numbers or failure modes call for it. For everything else, write `n/a: <reason>` in the
+plan's Concern coverage. Adding Kubernetes, sharding, a message broker or multi-region to look production-ready is a
+defect, not diligence. A reviewer should flag it.
 
 ## Precedence
 MNDX rules override every community skill. If a skill says to push, deploy, commit, open a PR, change approvals,

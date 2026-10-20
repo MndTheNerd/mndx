@@ -31,6 +31,20 @@ Claude reads the project the way a new senior hire would:
 It **never** runs migrations, seeds, deploy scripts, or anything that could touch a real database or external
 service.
 
+**Evidence rules** (adapted from [REA](https://github.com/morluto/rea), MIT, a reverse-engineering toolkit):
+- It works **summary-first**: a small inventory and a list of questions, then it reads only where a question needs it,
+  each file once.
+- Every finding is tagged **observed** (read or run) or **inferred**. A "not found" claim says what was searched,
+  because an empty search proves absence only within what was examined.
+- The assessment lists the **questions** (answered / partial / unresolved) and what was **not examined**, so you can
+  see the audit's limits.
+
+**No usable source?** If all that exists is a shipped build (a minified bundle, APK, Electron app, binary) or a
+system nobody can explain, Claude first asks whether you own it or are authorized to analyze it, because reverse
+engineering can breach licences or law ⚖. It analyzes statically, using REA's `reverse-engineer-anything` skill if
+you have it installed (otherwise normal unpacking and reading tools), records behavior as observed or inferred, and
+**never runs an unknown binary or app without your explicit OK**. MNDX never installs REA for you.
+
 ## 2. Document
 
 Whatever you choose next, the project ends up documented:

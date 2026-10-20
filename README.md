@@ -15,7 +15,7 @@ idea ─► route ─► spec ─► ✋ you approve ─► plan ─► ✋ you 
 - ✅ **Verified, not claimed:** `mndx.js check` runs your real test, lint, typecheck and build commands. Shipping is
   refused unless they're green **for the current code**, and the app was actually run and used for every acceptance
   criterion.
-- 🧭 **Concern router:** any task written in plain language is checked against 20 production concerns (security,
+- 🧭 **Concern router:** any task written in plain language is checked against 22 production concerns (security,
   privacy & legal, payments, UX, accessibility, data, auth, i18n/RTL, devops, infra, app-store policies…). Their
   checklists and expert skills are applied all the way through.
 - 🧰 **45 curated community skills** from [skills.sh](https://skills.sh/), from Stripe, Expo, Vercel, Anthropic,
@@ -88,7 +88,7 @@ Then, in a Claude Code session, run `/mndx:skills install all` and start a new s
 | [User guide](docs/GUIDE.md) | every command and step in depth, what MNDX creates, tips |
 | [Existing projects](docs/EXISTING-PROJECTS.md) | learn → audit → rebuild / fix / keep, and the backlog |
 | [Autopilot](docs/AUTOPILOT.md) | unattended runs, stop rules, permission setup |
-| [Production concerns](docs/CONCERNS.md) | the router, the 20 concerns, legal/compliance, extending it |
+| [Production concerns](docs/CONCERNS.md) | the router, the 22 concerns, legal/compliance, extending it |
 | [Community skills](docs/SKILLS.md) | the 45 skills, why each was chosen, adding more |
 | [Customizing](docs/CUSTOMIZING.md) | change stacks, quality bar, checklists, templates; release a new version |
 | [How it works](docs/HOW-IT-WORKS.md) | hooks, state, the approval hash, the CLI, tests |

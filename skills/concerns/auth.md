@@ -9,6 +9,10 @@ principles apply whatever the library.
 - [ ] Passwords (if any): at least 8 characters, checked against breached lists where possible, hashed by the
       library. No composition rules beyond that (NIST 800-63B).
 - [ ] Login, signup, reset and OTP endpoints are rate-limited and don't reveal whether an account exists.
+- [ ] **JWTs** (if used): short-lived access tokens (15 minutes or less), refresh tokens that rotate on every use with
+      reuse detection and server-side revocation, a pinned algorithm (no `none`), and signing keys in a KMS with a
+      `kid` and a written **key rotation** schedule (the old key stays valid until its tokens expire). Prefer opaque
+      server sessions when you don't need stateless tokens.
 - [ ] Email verification before sensitive actions. Password reset tokens are single-use and short-lived.
 - [ ] OAuth: state + PKCE, exact redirect URI matching, link accounts only on a verified email.
 - [ ] MFA available for accounts that hold money or sensitive data (TOTP / passkeys).

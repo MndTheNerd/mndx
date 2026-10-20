@@ -13,7 +13,15 @@ This step only **reads** code. You write only `.md` docs, which the gate allows,
 approves an item.
 
 ## 1. Learn the project (you, in this session)
-The goal is real understanding, because every later decision depends on it.
+The goal is real understanding, because every later decision depends on it. Two rules keep it cheap and honest
+(adapted from [REA](https://github.com/morluto/rea)'s evidence-first method):
+- **Work summary-first.** Start with a small inventory (tree, manifests, entry points, git history) and write down the
+  questions to answer (what it is, how it runs, the main flows, data, auth, payments, deploy, risks). Then read only
+  where a question needs it. Read each file once, and keep notes in the docs, so nothing is re-read or re-searched.
+- **Keep evidence honest.** Tag every finding **observed** (you read or ran it) or **inferred**. Never present static
+  reading as runtime behavior. Bound every "not found" claim by what was searched, because an empty search proves
+  absence only within what was examined. At the end, mark each question answered, partial or unresolved, and list
+  what wasn't examined (ASSESSMENT.md: Questions, Not examined).
 - **Map it:** directory tree (skip `node_modules`, build output, vendored code), languages, frameworks and
   versions (package.json / pyproject / go.mod / Cargo.toml / lockfiles), entry points, and how it starts.
 - **History:** `git log --oneline | head -50`, the most-changed files, recent activity, and whether it's live
@@ -26,6 +34,13 @@ The goal is real understanding, because every later decision depends on it.
   results. **Never** run migrations, seeds, deploy scripts, or anything that would talk to a real database or
   external service. Check the env and config first. If running something could affect real data, don't.
 - **Domain:** the nouns and verbs the code uses. Note inconsistent names.
+- **No usable source?** (only a shipped build such as a minified bundle, APK, Electron app or binary, or a system nobody
+  can explain.) First ask whether the user owns it or is authorized to analyze it ⚖, because reverse engineering can
+  breach licences or law. Analyze statically by default. Use `reverse-engineer-anything` (REA) if the session lists it.
+  Otherwise inspect with normal tools (unpack, read bundles and source maps, manifests, configs) and mention that
+  REA exists on skills.sh. Installing it is the user's call, never under autopilot. **Never run an unknown binary or
+  app without the user's explicit OK.** Record behavior as observed or inferred in ARCHITECTURE.md and, for a
+  rebuild, in the REBUILD.md parity inventory.
 
 ## 2. Document what exists (it's true even if they choose "keep")
 Using `${CLAUDE_PLUGIN_ROOT}/templates/project/`:
