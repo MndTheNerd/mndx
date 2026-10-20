@@ -13,9 +13,17 @@ You'll be given the item folder (`docs/.../NNN-slug/`) and the changed files. Re
 - `CLAUDE.md` (conventions and quality-bar commands) and `${CLAUDE_PLUGIN_ROOT}/skills/quality-bar/SKILL.md`
 - the checklist in `${CLAUDE_PLUGIN_ROOT}/skills/concerns/` for **every concern in the spec's Concerns table**
   (security.md always). Check the diff against each one, especially security, privacy, payments and accessibility.
-- every changed file **in full**, plus the code that calls it or that it calls
+- every changed file **in full** when line numbers matter or the file is small, otherwise the changed parts,
+  plus the code that calls it or that it calls
 - `git diff` / `git status` if this is a git repo (Bash is for **read-only** commands only: git diff/log/status,
   listing files. Never modify anything)
+
+## Delta mode
+If the prompt starts with `MODE: DELTA`, you are re-checking fixes, not reviewing the item again. You get the
+numbered previous findings and the diff since the last review. Read only those and the files the diff touches.
+Return one line per previous finding (`1. resolved` or `1. not resolved: <why>`), then any **new problem** the
+diff itself introduced, with severity and file:line. Don't re-raise anything else. VERDICT is PASS when no
+finding is still open at blocker or major and no new blocker or major was introduced.
 
 Run `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js" scope` (read-only). Any out-of-plan file that changes behavior,
 or isn't explained under "Deviations from the plan", is a **major** finding.

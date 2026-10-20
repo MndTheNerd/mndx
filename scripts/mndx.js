@@ -23,6 +23,7 @@ const USAGE = `Usage: node mndx.js <command> [args]
   scope                     List files edited outside the active feature's plan (## Files)
   done [note...]            Close the active item as shipped (must be at stage "ship")
   abandon [reason...]       Close the active item without shipping (docs are kept)
+  review-mode [quick|full]  Show or set how re-reviews run: quick (default, delta re-reviews) or full
   approve [doc]             Autopilot only: approve the next doc after review
   autopilot-end <completed|stopped> [note...]
                             End the autopilot grant
@@ -36,6 +37,10 @@ const USAGE = `Usage: node mndx.js <command> [args]
                             Restore skills from a snapshot (default: the latest)
 `;
 
+// Quick re-reviews are deltas and never repeat for minor findings; full ones re-read everything (skills/reviews).
+const REVIEW_MODES = ['quick', 'full'];
+const reviewMode = (state) => (REVIEW_MODES.includes(state.reviewMode) ? state.reviewMode : 'quick');
+
 function requireRoot() {
   const root = lib.findRoot(process.cwd());
   if (!root) throw new lib.MndxError('Not an MNDX project (no .mndx/state.json here or above). Run /mndx:init.');
@@ -48,6 +53,7 @@ function describe(root, state) {
   if (state.autopilot && state.autopilot.active) {
     lines.push(`Autopilot: ON since ${state.autopilot.grantedAt} — goal: ${state.autopilot.goal || '(continue active item)'}`);
   }
+  lines.push(`Review mode: ${reviewMode(state)}`);
   const item = state.active;
   if (!item) {
     lines.push('Active item: none');
@@ -164,6 +170,16 @@ function main(argv) {
       if (state.active) state.active.autopilot = false;
       lib.writeState(root, state);
       return `Autopilot ended (${outcome}). Approvals are back to the user.`;
+    }
+    case 'review-mode': {
+      const root = requireRoot();
+      const state = lib.readState(root);
+      const [mode] = rest;
+      if (mode === undefined) return `Review mode: ${reviewMode(state)}${state.reviewMode ? '' : ' (default)'}`;
+      if (!REVIEW_MODES.includes(mode)) throw new lib.MndxError('Review mode must be "quick" or "full".');
+      state.reviewMode = mode;
+      lib.writeState(root, state);
+      return `Review mode is now ${mode}.`;
     }
     case 'scope': {
       const root = requireRoot();

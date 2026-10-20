@@ -290,3 +290,19 @@ test('assess is evidence-first and handles projects with no source safely', () =
   const template = read('templates/project/ASSESSMENT.md');
   for (const re of [/## Questions/, /## Not examined/, /\| Evidence \|/]) assert.match(template, re, `template is missing ${re}`);
 });
+test('reviews are quick by default, with delta re-reviews, and the skills point at one shared protocol', () => {
+  const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
+  const reviews = read('skills/reviews/SKILL.md');
+  for (const re of [/default is \*\*quick\*\*/, /MODE: DELTA/, /Never\s+re-review for minors|\*\*Never\*\* re-review for minors/,
+    /fresh full review/, /review-mode full/]) {
+    assert.match(reviews, re, `reviews skill is missing ${re}`);
+  }
+  for (const p of ['skills/spec/SKILL.md', 'skills/verify/SKILL.md', 'skills/autopilot/SKILL.md']) {
+    assert.match(read(p), /skills\/reviews\/SKILL\.md/, `${p} must point at the reviews skill`);
+  }
+  for (const p of ['agents/spec-reviewer.md', 'agents/code-reviewer.md']) {
+    const agent = read(p);
+    assert.match(agent, /## Delta mode/, `${p} needs a delta mode`);
+    assert.match(agent, /MODE: DELTA/, `${p} must say what triggers delta mode`);
+  }
+});

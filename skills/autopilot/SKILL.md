@@ -51,8 +51,10 @@ CLI shorthand below: `mndx` means `node "${CLAUDE_PLUGIN_ROOT}/scripts/mndx.js"`
    `todo` lines in order.
 2. **For each item**, follow the matching skill file in `${CLAUDE_PLUGIN_ROOT}/skills/`, skipping its hand-off
    step:
+   - Read `${CLAUDE_PLUGIN_ROOT}/skills/reviews/SKILL.md` once: it says how to launch reviewers and when and how
+     to re-review (quick mode by default).
    - **feature:** `spec/SKILL.md`, where `mndx:spec-reviewer` is the gate. Fix the findings, re-review if there
-     were blockers, then `mndx approve`. Then `plan/SKILL.md`: launch `mndx:spec-reviewer` again on the plan
+     were blockers or majors, then `mndx approve`. Then `plan/SKILL.md`: launch `mndx:spec-reviewer` again on the plan
      (ask it to check the plan against the spec: every AC covered, tasks complete and in order, risks handled),
      fix, then `mndx approve`.
    - **fix:** `fix/SKILL.md`, then `mndx:spec-reviewer` on `bug.md` (root cause proven? regression test

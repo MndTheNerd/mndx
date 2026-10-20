@@ -26,7 +26,8 @@ For each unchecked task:
    (they're already agreed, so don't re-ask). Watch each test fail for the right reason. For a fix, the regression
    test from `bug.md` always comes first and must fail before the fix.
 2. Write the smallest clean implementation that passes them. Reuse what exists and match the surrounding code.
-3. Run the tests for the area you changed, plus the typecheck. Fix it until it's green before moving on.
+3. Run the tests for the area you changed, plus the typecheck. Fix it until it's green before moving on. Keep
+   command output small: the last 15 lines or only the failures, and re-read a log only when something failed.
 4. **Refactor, once and bounded** (red → green → refactor). With everything green, look only at the code you
    just wrote or touched in this task: remove duplication, fix unclear names, simplify what's convoluted. Then
    run the same tests and typecheck again. Rules:
