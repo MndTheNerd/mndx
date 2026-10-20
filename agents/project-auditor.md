@@ -23,6 +23,13 @@ running the project's own test, lint or build commands, dependency audits (`npm 
 For a large codebase, sample deliberately: every entry point, every boundary (HTTP, DB, external APIs, auth), the
 hot spots from git history, and a random handful of ordinary files. Say what you sampled.
 
+## Evidence rules
+- Mark each finding **observed** (you read the code or ran it) or **inferred** (reasoned from patterns). Never present
+  static reading as proof of runtime behavior.
+- A "not found" claim ("no auth check", "no tests for payments") names its **search boundary**: what you searched and
+  how much you read. Absence is proven only within what you examined.
+- Start with an inventory and drill only where a question needs it. Read each file once and don't repeat a search.
+
 ## Score each area 0–3
 0 = missing or dangerous · 1 = present but weak · 2 = solid with gaps · 3 = production-grade
 
@@ -39,12 +46,13 @@ Return only this:
 ```
 SUMMARY: <3 sentences: what this is, its overall health, the single biggest risk>
 SAMPLED: <what you read, for a large codebase>
+NOT EXAMINED: <what you skipped or couldn't run, so the audit's limits are visible>
 
 SCORECARD:
 | Area | Score | One-line justification |
 
 FINDINGS (most severe first):
-1. [critical|high|medium|low] <area> — path/to/file.ext:LINE — <problem>. Impact: <concrete consequence>. Fix: <specific change>. Effort: <S|M|L>.
+1. [critical|high|medium|low] <area> — path/to/file.ext:LINE — <problem>. Impact: <concrete consequence>. Fix: <specific change>. Effort: <S|M|L>. Evidence: <observed|inferred>; for a "not found" claim, what you searched.
 ...
 
 GOOD: <what's genuinely well done and must be preserved in any fix or rebuild>

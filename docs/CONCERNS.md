@@ -36,7 +36,7 @@ or from a terminal:
 node scripts/mndx.js route "add a team invite flow with email" --json
 ```
 
-## The 20 concerns
+## The 22 concerns
 
 | Concern | Applies when | MNDX checklist | Community skills |
 |---|---|---|---|
@@ -46,17 +46,19 @@ node scripts/mndx.js route "add a team invite flow with email" --json
 | Accessibility | anything with a UI | [accessibility.md](../skills/concerns/accessibility.md) | accessibility, web-design-guidelines |
 | Web frontend | web, react, page, form… | stack-web playbook | frontend-ui-engineering, vercel-react-best-practices, playwright-cli |
 | Mobile app | ios, android, expo… | stack-mobile playbook | expo-overview (+ expo-*), vercel-react-native-skills |
-| Backend & API | api, endpoint, webhook, cli… | stack-backend playbook | api-and-interface-design, fastify-best-practices, node |
+| Backend & API | api, endpoint, webhook, rate limiting, websocket, cli… | [api.md](../skills/concerns/api.md) + stack-backend playbook | api-and-interface-design, fastify-best-practices, node |
 | Data & database | database, migration, import… | [data.md](../skills/concerns/data.md) | supabase-postgres-best-practices, domain-modeling |
 | Identity & access | login, signup, roles, invite… | [auth.md](../skills/concerns/auth.md) | better-auth-best-practices, better-auth-security-best-practices |
 | Privacy, compliance & legal | personal data, cookies, GDPR, kids, health, UGC… | [privacy-compliance.md](../skills/concerns/privacy-compliance.md) | none (MNDX checklist) |
 | Payments & billing | pay, checkout, subscription, stripe, knet… | [payments.md](../skills/concerns/payments.md) | stripe-best-practices |
-| Performance & scale | slow, cache, scale, realtime… | none | performance-optimization, core-web-vitals |
+| Performance & scale | slow, cache, scale, p99, n+1, cdn, cold start… | [performance.md](../skills/concerns/performance.md) | performance-optimization, core-web-vitals |
 | SEO | landing page, blog, sitemap… | none | seo, web-quality-audit |
 | Internationalization | language, arabic, rtl, currency, timezone… | [i18n.md](../skills/concerns/i18n.md) | none |
 | Email, SMS & notifications | email, sms, otp, push… | [messaging.md](../skills/concerns/messaging.md) | none |
 | AI / LLM features | ai, llm, chatbot, claude, rag… | [ai.md](../skills/concerns/ai.md) | claude-api |
-| Observability | logging, monitoring, alerts… | none | observability-and-instrumentation |
+| Dates, times & scheduling | today, streak, schedule, deadline, timezone… | [time.md](../skills/concerns/time.md) | property-based-testing |
+| Observability | logging, monitoring, alerts, slo, tracing… | [observability.md](../skills/concerns/observability.md) | observability-and-instrumentation |
+| Reliability & resilience | retry, timeout, queue, race condition, failover, saga… | [reliability.md](../skills/concerns/reliability.md) | none |
 | CI/CD & release | ci, deploy, release, docker… | [devops.md](../skills/concerns/devops.md) | ci-cd-and-automation, gha-security-review, shipping-and-launch |
 | Infrastructure & hosting | hosting, aws, backup, queue, storage, photo… | [infra.md](../skills/concerns/infra.md) | shipping-and-launch |
 | App store release | app store, play store, testflight, iap… | [app-store.md](../skills/concerns/app-store.md) | apple-appstore-reviewer, expo-overview |
@@ -64,6 +66,13 @@ node scripts/mndx.js route "add a team invite flow with email" --json
 **Implied links:** auth → privacy + security · payments → security + privacy + messaging · messaging → privacy ·
 ai → privacy + security · app-store → privacy + mobile · web/mobile → UX + accessibility · data/devops/infra →
 security.
+
+**Complexity budget:** the reliability, performance, infra and data checklists describe patterns for products that
+need them. Meet an item only when the spec's numbers or failure modes call for it. Otherwise write `n/a: <reason>`.
+Adding Kubernetes, sharding, a broker or multi-region just to look production-ready is a defect.
+
+**Beyond the curated skills:** each concern may also list `alsoConsider` skills from Claude Code and other plugins.
+See [SKILLS.md](SKILLS.md#not-limited-to-this-list).
 
 ## ⚖ Legal & compliance
 

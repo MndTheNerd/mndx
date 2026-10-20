@@ -6,6 +6,15 @@
 ## Summary
 <!-- 3 sentences: what this is, overall health, the single biggest risk. -->
 
+## Questions
+<!-- Written first, closed last. Status: answered / partial / unresolved. Evidence: what you read or ran. -->
+| Question | Status | Evidence |
+|---|---|---|
+| What is it and who uses it? | | |
+| How does it run and deploy? | | |
+| What are the main flows, data and boundaries? | | |
+| What touches auth, money or personal data? | | |
+
 ## What was checked
 <!-- Commands actually run and their real results, and what was read or sampled. -->
 | Check | Command | Result |
@@ -39,8 +48,12 @@
 | Docs & onboarding | | |
 
 ## Findings
-| # | Severity | Area | Where | Problem → impact | Fix | Effort |
-|---|---|---|---|---|---|---|
+<!-- Evidence: observed (read or ran it) or inferred. For a "not found" claim, say what was searched. -->
+| # | Severity | Area | Where | Problem → impact | Fix | Effort | Evidence |
+|---|---|---|---|---|---|---|---|
+
+## Not examined
+<!-- What was skipped or couldn't be run, and why, so the audit's limits are visible. -->
 
 ## Worth keeping
 <!-- What's genuinely good. Any fix or rebuild must preserve it. -->

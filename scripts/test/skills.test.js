@@ -11,7 +11,7 @@ const route = require('../route');
 const ROOT = path.join(__dirname, '..', '..');
 const PLUGIN_SKILLS = fs.readdirSync(path.join(ROOT, 'skills'));
 const manifest = skills.loadManifest();
-const { concerns, builtinSkills } = route.loadConcerns();
+const { concerns, builtinSkills, optionalSkills = [] } = route.loadConcerns();
 const known = new Set([...manifest.map((s) => s.name), ...builtinSkills]);
 
 test('manifest entries are complete, unique and valid', () => {
@@ -63,7 +63,8 @@ test('every manifest skill serves at least one concern or stage', () => {
 
 test('skill names referenced in MNDX docs exist', () => {
   const agents = fs.readdirSync(path.join(ROOT, 'agents')).map((f) => f.replace(/\.md$/, ''));
-  const allowed = new Set([...known, ...PLUGIN_SKILLS, ...agents]);
+  const alsoConsider = concerns.flatMap((c) => c.alsoConsider || []); // Claude Code and plugin skills
+  const allowed = new Set([...known, ...PLUGIN_SKILLS, ...agents, ...alsoConsider, ...optionalSkills]);
   const files = [];
   for (const d of PLUGIN_SKILLS) {
     for (const f of fs.readdirSync(path.join(ROOT, 'skills', d))) if (f.endsWith('.md')) files.push(path.join(ROOT, 'skills', d, f));
@@ -162,4 +163,130 @@ test('the build skill ends each task with a bounded refactor, then re-runs the t
   // It must come after "make it green" and before the task is ticked off.
   assert.ok(build.indexOf('Refactor, once') > build.indexOf('Run the tests for the area'));
   assert.ok(build.indexOf('Refactor, once') < build.indexOf('Tick the task'));
+});
+// The 111 "what vibe coders miss" topics (a viral engineering checklist) and the MNDX checklist that owns each one.
+// Each needle must appear in that checklist, so a topic can't be dropped without this test noticing.
+const ENGINEERING_TOPICS = [
+  ['Rate Limiting', 'api.md', 'rate limiting'], ['Caching', 'performance.md', 'caching'],
+  ['Load Balancing', 'infra.md', 'load balancer'], ['Reverse Proxies', 'infra.md', 'reverse proxy'],
+  ['API Gateways', 'infra.md', 'api gateway'], ['CI/CD', 'devops.md', 'ci/cd'], ['Docker', 'devops.md', 'docker'],
+  ['Kubernetes', 'infra.md', 'kubernetes'], ['Service Discovery', 'infra.md', 'service discovery'],
+  ['Circuit Breakers', 'reliability.md', 'circuit breaker'], ['Timeouts', 'reliability.md', 'timeout'],
+  ['Retries', 'reliability.md', 'retries'], ['Exponential Backoff', 'reliability.md', 'exponential backoff'],
+  ['Idempotency', 'api.md', 'idempotency'], ['Message Queues', 'reliability.md', 'message queue'],
+  ['Pub/Sub', 'reliability.md', 'pub/sub'], ['Event-Driven Architecture', 'reliability.md', 'event-driven'],
+  ['Distributed Transactions', 'reliability.md', 'distributed transactions'], ['Saga Pattern', 'reliability.md', 'saga'],
+  ['Dead Letter Queues', 'reliability.md', 'dead-letter queue'], ['Cron Jobs', 'reliability.md', 'cron'],
+  ['WebSockets', 'api.md', 'websockets'], ['Long Polling', 'api.md', 'long polling'],
+  ['Server-Sent Events', 'api.md', 'server-sent events'], ['Database Indexing', 'data.md', 'indexes'],
+  ['Query Optimization', 'performance.md', 'query optimization'], ['N+1 Queries', 'performance.md', 'n+1'],
+  ['Connection Pooling', 'performance.md', 'connection pooling'], ['Read Replicas', 'data.md', 'read replicas'],
+  ['Sharding', 'data.md', 'sharding'], ['Partitioning', 'data.md', 'partitioning'], ['Replication', 'data.md', 'replication'],
+  ['Leader Election', 'reliability.md', 'leader election'], ['CAP Theorem', 'reliability.md', 'cap theorem'],
+  ['Eventual Consistency', 'reliability.md', 'eventual consistency'],
+  ['Optimistic Locking', 'data.md', 'optimistic locking'], ['Pessimistic Locking', 'data.md', 'pessimistic locking'],
+  ['Distributed Locks', 'reliability.md', 'distributed locks'], ['Race Conditions', 'reliability.md', 'race conditions'],
+  ['Deadlocks', 'reliability.md', 'deadlocks'], ['Memory Leaks', 'performance.md', 'leaks'],
+  ['Garbage Collection', 'performance.md', 'garbage'], ['Thread Safety', 'reliability.md', 'thread safety'],
+  ['Backpressure', 'performance.md', 'backpressure'], ['Autoscaling', 'infra.md', 'autoscaling'],
+  ['Horizontal Scaling', 'infra.md', 'horizontal scaling'], ['Vertical Scaling', 'infra.md', 'vertical scaling'],
+  ['CDN', 'infra.md', 'cdn'], ['Edge Caching', 'infra.md', 'edge caching'],
+  ['Cache Invalidation', 'performance.md', 'cache invalidation'], ['Feature Flags', 'devops.md', 'feature flags'],
+  ['Blue-Green Deployment', 'devops.md', 'blue-green'], ['Canary Releases', 'devops.md', 'canary'],
+  ['Rolling Deployments', 'devops.md', 'rolling'], ['Rollbacks', 'devops.md', 'rollback'],
+  ['Health Checks', 'observability.md', 'health checks'], ['Liveness & Readiness Probes', 'observability.md', ['liveness', 'readiness']],
+  ['Monitoring', 'observability.md', 'monitoring'], ['Logging', 'observability.md', 'logging'],
+  ['Distributed Tracing', 'observability.md', 'distributed tracing'], ['Metrics', 'observability.md', 'metrics'],
+  ['Alerts', 'observability.md', 'alerts'], ['SLOs', 'observability.md', 'slos'], ['SLIs', 'observability.md', 'slis'],
+  ['Error Budgets', 'observability.md', 'error budget'], ['Observability', 'observability.md', 'observability'],
+  ['Secrets Management', 'security.md', 'secrets management'], ['IAM', 'security.md', 'iam:'],
+  ['OAuth', 'auth.md', 'oauth'], ['JWT Rotation', 'auth.md', ['jwt', 'key rotation']], ['TLS', 'security.md', '**tls**'],
+  ['Encryption at Rest', 'security.md', 'encryption at rest'], ['Encryption in Transit', 'security.md', 'encryption in transit'],
+  ['WAF', 'security.md', 'waf'], ['DDoS Protection', 'security.md', 'ddos'], ['CORS', 'security.md', 'cors'],
+  ['CSRF', 'security.md', 'csrf'], ['SQL Injection', 'security.md', 'sql injection'], ['XSS', 'security.md', 'xss'],
+  ['SSRF', 'security.md', 'ssrf'], ['Database Migrations', 'data.md', 'migration'],
+  ['Schema Versioning', 'data.md', 'schema versioning'], ['Disaster Recovery', 'reliability.md', 'disaster'],
+  ['Backups', 'reliability.md', 'backups'], ['Failover', 'reliability.md', 'failover'],
+  ['Multi-Region Deployment', 'infra.md', 'multi-region'], ['Chaos Engineering', 'reliability.md', 'chaos engineering'],
+  ['Cost Optimization', 'infra.md', 'cost optimization'], ['Cold Starts', 'performance.md', 'cold starts'],
+  ['Serverless Limits', 'infra.md', ['serverless', 'limits']], ['Latency', 'performance.md', 'latency'],
+  ['Throughput', 'performance.md', 'throughput'], ['P99 Latency', 'performance.md', 'p99'],
+  ['Tail Latency', 'performance.md', 'tail latency'], ['Network Partitions', 'reliability.md', 'network partitions'],
+  ['Clock Skew', 'reliability.md', 'clock skew'], ['DNS', 'infra.md', 'dns'], ['TCP vs UDP', 'api.md', ['tcp', 'udp']],
+  ['HTTP/2 & HTTP/3', 'api.md', ['http/2', 'http/3']], ['gRPC', 'api.md', 'grpc'], ['Webhooks', 'api.md', 'webhooks'],
+  ['API Versioning', 'api.md', 'versioning'], ['Semantic Versioning', 'devops.md', 'semver'],
+  ['Infrastructure as Code', 'infra.md', 'infrastructure-as-code'], ['Terraform', 'infra.md', 'terraform'],
+  ['Helm Charts', 'infra.md', 'helm charts'], ['Build Caching', 'devops.md', 'build caching'],
+  ['Dependency Hell', 'devops.md', 'dependency hell'], ['Production Incidents', 'devops.md', 'production incidents'],
+  ['On-Call', 'devops.md', 'on call'], ['Postmortems', 'devops.md', 'postmortem'],
+];
+
+test('all 111 engineering topics land in a checklist', () => {
+  assert.equal(ENGINEERING_TOPICS.length, 111);
+  assert.equal(new Set(ENGINEERING_TOPICS.map((t) => t[0])).size, 111, 'duplicate topic');
+  for (const [topic, file, needle] of ENGINEERING_TOPICS) {
+    const text = fs.readFileSync(path.join(route.CHECKLIST_DIR, file), 'utf8').toLowerCase();
+    for (const n of [].concat(needle)) assert.ok(text.includes(n), `${topic}: "${n}" is missing from ${file}`);
+  }
+});
+
+test('the scale-sensitive checklists carry the complexity budget', () => {
+  for (const f of ['reliability.md', 'performance.md']) {
+    const text = fs.readFileSync(path.join(route.CHECKLIST_DIR, f), 'utf8');
+    assert.match(text, /Scale gate/, `${f}: needs the scale gate`);
+    assert.match(text, /n\/a: <reason>/, `${f}: must say how to opt out`);
+  }
+  assert.match(fs.readFileSync(path.join(route.CHECKLIST_DIR, 'SKILL.md'), 'utf8'), /Complexity budget/);
+});
+
+test('router: engineering tasks reach the right concerns', () => {
+  const ids = (task) => route.route(task).map((r) => r.id);
+  const cases = [
+    ['Add retries with exponential backoff and a dead letter queue to the webhook handler', ['reliability', 'api']],
+    ['Add p99 latency alerts, SLOs and an error budget', ['observability', 'performance']],
+    ['Roll out the new checkout with a canary release behind a feature flag', ['devops']],
+    ['Add a read replica and shard the orders table', ['data']],
+    ['Put the site behind a CDN with a WAF and DDoS protection', ['infra', 'security', 'performance']],
+    ['Rotate the JWT signing keys', ['auth']],
+    ["Write a postmortem for last night's incident", ['devops']],
+    ['Fix the race condition when two users book the same slot', ['reliability']],
+    ['Stream live updates to the browser with websockets', ['api']],
+  ];
+  for (const [task, expected] of cases) {
+    const got = ids(task);
+    for (const c of expected) assert.ok(got.includes(c), `"${task}" should route to ${c}, got ${got.join(', ')}`);
+  }
+});
+
+test('alsoConsider names Claude Code and plugin skills, never the curated ones', () => {
+  const curated = new Set([...manifest.map((s) => s.name), ...builtinSkills]);
+  for (const c of concerns) {
+    const names = c.alsoConsider || [];
+    assert.equal(new Set(names).size, names.length, `${c.id}: duplicate alsoConsider`);
+    for (const n of names) {
+      assert.match(n, /^[a-z0-9-]+(:[a-z0-9-]+)?$/, `${c.id}: bad skill name "${n}"`);
+      assert.ok(!curated.has(n), `${c.id}: "${n}" is already a curated skill`);
+    }
+  }
+});
+
+test('router output lists alsoConsider, and the route skill treats the curated skills as a floor', () => {
+  const security = route.route('add a login page').find((r) => r.id === 'security');
+  assert.ok(security.alsoConsider.includes('security-review'));
+  assert.match(route.format(route.route('add a login page')), /also consider, if this session lists them: .*security-review/);
+  const routeSkill = fs.readFileSync(path.join(ROOT, 'skills', 'route', 'SKILL.md'), 'utf8');
+  assert.match(routeSkill, /floor,\s+not\s+a\s+ceiling/);
+  assert.match(routeSkill, /skills\s+your\s+session\s+actually\s+lists/);
+});
+test('assess is evidence-first and handles projects with no source safely', () => {
+  const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8').replace(/\r\n/g, '\n');
+  const assess = read('skills/assess/SKILL.md');
+  for (const re of [/summary-first/i, /\*\*observed\*\*/, /\*\*inferred\*\*/, /not found/, /authorized to analyze/,
+    /reverse-engineer-anything/, /Never run an unknown binary or\s+app without the user's explicit OK/]) {
+    assert.match(assess, re, `assess skill is missing ${re}`);
+  }
+  const auditor = read('agents/project-auditor.md');
+  for (const re of [/search boundary/, /NOT EXAMINED/, /\*\*observed\*\*/]) assert.match(auditor, re, `auditor is missing ${re}`);
+  const template = read('templates/project/ASSESSMENT.md');
+  for (const re of [/## Questions/, /## Not examined/, /\| Evidence \|/]) assert.match(template, re, `template is missing ${re}`);
 });

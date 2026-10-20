@@ -4,6 +4,19 @@ MNDX brings in 45 skills from the open skills ecosystem ([skills.sh](https://ski
 gets real expertise: Stripe's own payment guidance, Expo's own mobile guidance, Trail of Bits' static analysis,
 and so on. They're listed with reasons in [`config/skills.json`](../config/skills.json).
 
+## Not limited to this list
+
+The curated skills are a **floor, not a ceiling**. Claude Code ships its own skills (`security-review`,
+`code-review`, `simplify`, `claude-api`), and plugins add more (`engineering:*`, `design:*`, `legal:*`,
+`marketing:seo-audit`, …). If one of them does a job better, MNDX should use it: what matters is the best possible
+output.
+
+- Each concern in [`config/concerns.json`](../config/concerns.json) has an optional **`alsoConsider`** list of such
+  skills. The router prints it as "also consider, if this session lists them".
+- The router can't see which plugins a session has, so Claude checks its own skill list, uses the ones that exist and
+  fit, and also scans for any other better fit. The route skill says so, and the Concerns table records what was used.
+- Nothing is installed for these, and a missing one is simply skipped. MNDX's gates still win over any skill.
+
 ## Managing them
 
 | Do | Command |

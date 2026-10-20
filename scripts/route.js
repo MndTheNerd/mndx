@@ -57,6 +57,9 @@ function route(task, { cwd = process.cwd(), ui = false } = {}) {
       title: c.title,
       reason,
       checklist: c.checklist ? path.join(CHECKLIST_DIR, c.checklist) : null,
+      // Skills from Claude Code itself or other plugins that may do this concern better. Whether the session has
+      // them can't be checked from here, so Claude looks at its own skill list (see the route skill).
+      alsoConsider: c.alsoConsider || [],
       skills: c.skills.map((name) => ({
         name,
         installed: builtinSkills.includes(name) || skills.isInstalled(name, cwd),
@@ -74,6 +77,7 @@ function format(routed) {
     if (r.skills.length) {
       lines.push(`    skills: ${r.skills.map((s) => (s.installed ? s.name : `${s.name} (not installed)`)).join(', ')}`);
     }
+    if (r.alsoConsider.length) lines.push(`    also consider, if this session lists them: ${r.alsoConsider.join(', ')}`);
   }
   const missing = routed.flatMap((r) => r.skills).filter((s) => !s.installed);
   if (missing.length) lines.push('', 'Some skills are missing. Install them with: mndx.js skills install');

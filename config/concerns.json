@@ -1,6 +1,7 @@
 {
-  "$comment": "Production concerns the MNDX router checks every task against. `triggers` are hints for the deterministic first pass (`mndx.js route`); Claude's judgment adds or drops concerns from there. `implies` pulls in related concerns (accounts mean personal data, so privacy). `always` concerns apply to every item (`ui` ones to any item with a user interface). `checklist` is an MNDX file in skills/concerns/. `skills` are community skills from config/skills.json (or Claude Code built-ins listed in `builtinSkills`).",
+  "$comment": "Production concerns the MNDX router checks every task against. `triggers` are hints for the deterministic first pass (`mndx.js route`); Claude's judgment adds or drops concerns from there. `implies` pulls in related concerns (accounts mean personal data, so privacy). `always` concerns apply to every item (`ui` ones to any item with a user interface). `checklist` is an MNDX file in skills/concerns/. `skills` are community skills from config/skills.json (or Claude Code built-ins listed in `builtinSkills`). `alsoConsider` lists Claude Code or plugin skills that may do a concern better than the curated ones; the session decides which exist. `optionalSkills` are named in skills (for example assess) but never installed by MNDX.",
   "builtinSkills": ["claude-api"],
+  "optionalSkills": ["reverse-engineer-anything"],
   "concerns": [
     {
       "id": "testing",
@@ -8,15 +9,17 @@
       "always": true,
       "triggers": ["test", "tests", "e2e", "coverage", "flaky", "regression"],
       "checklist": "testing.md",
-      "skills": ["tdd", "property-based-testing", "playwright-best-practices"]
+      "skills": ["tdd", "property-based-testing", "playwright-best-practices"],
+      "alsoConsider": ["engineering:testing-strategy"]
     },
     {
       "id": "security",
       "title": "Security",
       "always": true,
-      "triggers": ["secure", "security", "secret", "token", "encrypt", "upload", "uploads", "attachment", "attachments", "admin", "xss", "csrf", "injection", "permission", "vulnerability"],
+      "triggers": ["secure", "security", "secret", "token", "encrypt", "upload", "uploads", "attachment", "attachments", "admin", "xss", "csrf", "injection", "permission", "vulnerability", "iam", "waf", "ddos", "ssrf", "tls", "encryption", "sql injection"],
       "checklist": "security.md",
-      "skills": ["security-and-hardening", "sharp-edges", "semgrep", "secret-serialization"]
+      "skills": ["security-and-hardening", "sharp-edges", "semgrep", "secret-serialization"],
+      "alsoConsider": ["security-review"]
     },
     {
       "id": "ux",
@@ -24,7 +27,8 @@
       "always": "ui",
       "triggers": ["ui", "ux", "screen", "page", "design", "layout", "onboarding", "dashboard", "landing", "theme", "dark mode", "brand"],
       "checklist": "ux.md",
-      "skills": ["frontend-design", "web-design-guidelines", "expo-design-system"]
+      "skills": ["frontend-design", "web-design-guidelines", "expo-design-system"],
+      "alsoConsider": ["design:design-critique", "design:ux-copy"]
     },
     {
       "id": "accessibility",
@@ -32,7 +36,8 @@
       "always": "ui",
       "triggers": ["accessible", "accessibility", "a11y", "wcag", "screen reader", "keyboard", "contrast", "ada", "eaa"],
       "checklist": "accessibility.md",
-      "skills": ["accessibility", "web-design-guidelines"]
+      "skills": ["accessibility", "web-design-guidelines"],
+      "alsoConsider": ["design:accessibility-review"]
     },
     {
       "id": "frontend-web",
@@ -53,14 +58,15 @@
     {
       "id": "api",
       "title": "Backend & API",
-      "triggers": ["api", "endpoint", "backend", "server", "rest", "graphql", "webhook", "cli", "microservice", "rate limit", "integration", "sdk"],
-      "checklist": null,
-      "skills": ["api-and-interface-design", "fastify-best-practices", "node"]
+      "triggers": ["api", "endpoint", "backend", "server", "rest", "graphql", "webhook", "cli", "microservice", "rate limit", "integration", "sdk", "rate limiting", "throttle", "throttling", "idempotent", "idempotency", "versioning", "api version", "grpc", "websocket", "websockets", "long polling", "server-sent events", "sse", "http/2", "http/3", "pagination", "openapi", "swagger", "api gateway"],
+      "checklist": "api.md",
+      "skills": ["api-and-interface-design", "fastify-best-practices", "node"],
+      "alsoConsider": ["engineering:system-design"]
     },
     {
       "id": "data",
       "title": "Data & database",
-      "triggers": ["database", "db", "table", "schema", "migration", "sql", "postgres", "query", "index", "persist", "persisted", "saved", "local storage", "localstorage", "indexeddb", "offline", "sync", "import", "export", "csv", "report"],
+      "triggers": ["database", "db", "table", "schema", "migration", "sql", "postgres", "query", "index", "persist", "persisted", "saved", "local storage", "localstorage", "indexeddb", "offline", "sync", "import", "export", "csv", "report", "replica", "replicas", "read replica", "sharding", "partitioning", "replication", "indexing", "query optimization", "schema versioning", "optimistic locking", "pessimistic locking", "migrations"],
       "implies": ["security"],
       "checklist": "data.md",
       "skills": ["supabase-postgres-best-practices", "domain-modeling"]
@@ -68,7 +74,7 @@
     {
       "id": "auth",
       "title": "Identity & access",
-      "triggers": ["login", "log in", "sign in", "signup", "sign up", "register", "auth", "authentication", "password", "session", "oauth", "sso", "google login", "apple login", "magic link", "2fa", "mfa", "role", "roles", "team", "invite"],
+      "triggers": ["login", "log in", "sign in", "signup", "sign up", "register", "auth", "authentication", "password", "session", "oauth", "sso", "google login", "apple login", "magic link", "2fa", "mfa", "role", "roles", "team", "invite", "jwt", "key rotation"],
       "implies": ["privacy", "security"],
       "checklist": "auth.md",
       "skills": ["better-auth-best-practices", "better-auth-security-best-practices"]
@@ -78,7 +84,8 @@
       "title": "Privacy, compliance & legal",
       "triggers": ["personal data", "user data", "pii", "email address", "phone number", "location", "gdpr", "ccpa", "privacy", "cookie", "consent", "analytics", "tracking", "children", "kids", "minor", "health", "medical", "biometric", "delete account", "data export", "terms", "policy", "legal", "eu", "europe", "california", "user generated", "comments", "reviews", "moderation", "kyc", "delete their account", "delete my account", "account deletion", "personal information"],
       "checklist": "privacy-compliance.md",
-      "skills": []
+      "skills": [],
+      "alsoConsider": ["legal:compliance-check", "legal:legal-risk-assessment"]
     },
     {
       "id": "payments",
@@ -91,8 +98,8 @@
     {
       "id": "performance",
       "title": "Performance & scale",
-      "triggers": ["fast", "slow", "performance", "speed", "latency", "cache", "caching", "scale", "scaling", "thousands", "millions", "realtime", "real-time", "lighthouse", "core web vitals"],
-      "checklist": null,
+      "triggers": ["fast", "slow", "performance", "speed", "latency", "cache", "caching", "scale", "scaling", "thousands", "millions", "realtime", "real-time", "lighthouse", "core web vitals", "p99", "p95", "tail latency", "throughput", "n+1", "cdn", "cold start", "cold starts", "backpressure", "memory leak", "memory leaks", "garbage collection", "load test", "load testing", "bottleneck", "profiling"],
+      "checklist": "performance.md",
       "skills": ["performance-optimization", "core-web-vitals", "vercel-react-best-practices"]
     },
     {
@@ -100,7 +107,8 @@
       "title": "SEO & discoverability",
       "triggers": ["seo", "search engine", "google search", "landing page", "marketing", "blog", "public page", "social", "open graph", "sitemap", "indexing"],
       "checklist": null,
-      "skills": ["seo", "web-quality-audit"]
+      "skills": ["seo", "web-quality-audit"],
+      "alsoConsider": ["marketing:seo-audit"]
     },
     {
       "id": "time",
@@ -135,25 +143,35 @@
     {
       "id": "observability",
       "title": "Observability",
-      "triggers": ["log", "logs", "logging", "monitor", "monitoring", "metrics", "alert", "alerts", "error tracking", "sentry", "trace", "tracing", "audit log", "uptime", "health check"],
-      "checklist": null,
+      "triggers": ["log", "logs", "logging", "monitor", "monitoring", "metrics", "alert", "alerts", "error tracking", "sentry", "trace", "tracing", "audit log", "uptime", "health check", "slo", "slos", "sli", "slis", "error budget", "error budgets", "opentelemetry", "otel", "observability", "dashboard", "dashboards", "liveness", "readiness"],
+      "checklist": "observability.md",
       "skills": ["observability-and-instrumentation", "secret-serialization"]
+    },
+    {
+      "id": "reliability",
+      "title": "Reliability & resilience",
+      "triggers": ["retry", "retries", "retrying", "timeout", "timeouts", "backoff", "circuit breaker", "queue", "queues", "message queue", "pub/sub", "pubsub", "event-driven", "event driven", "saga", "dead letter", "dlq", "distributed", "race condition", "race conditions", "deadlock", "deadlocks", "concurrency", "concurrent", "thread safety", "locking", "distributed lock", "distributed locks", "consistency", "eventual consistency", "cap theorem", "failover", "disaster recovery", "chaos", "multi-region", "leader election", "network partition", "clock skew", "resilience", "reliability", "high availability", "fault tolerance"],
+      "checklist": "reliability.md",
+      "skills": [],
+      "alsoConsider": ["engineering:system-design", "engineering:architecture"]
     },
     {
       "id": "devops",
       "title": "CI/CD & release",
-      "triggers": ["ci", "cd", "pipeline", "github actions", "workflow", "deploy", "deployment", "release", "staging", "production", "preview", "docker", "container", "environment", "rollback"],
+      "triggers": ["ci", "cd", "pipeline", "github actions", "workflow", "deploy", "deployment", "release", "staging", "production", "preview", "docker", "container", "environment", "rollback", "feature flag", "feature flags", "canary", "blue-green", "blue green", "rolling deployment", "rolling deployments", "build cache", "build caching", "renovate", "dependabot", "incident", "incidents", "postmortem", "postmortems", "on-call", "oncall", "semver", "semantic versioning"],
       "implies": ["security"],
       "checklist": "devops.md",
-      "skills": ["ci-cd-and-automation", "gha-security-review", "shipping-and-launch"]
+      "skills": ["ci-cd-and-automation", "gha-security-review", "shipping-and-launch"],
+      "alsoConsider": ["engineering:deploy-checklist", "engineering:incident-response", "operations:runbook"]
     },
     {
       "id": "infra",
       "title": "Infrastructure & hosting",
-      "triggers": ["hosting", "cloud", "aws", "gcp", "azure", "vercel", "cloudflare", "railway", "fly", "vps", "domain", "dns", "cdn", "ssl", "backup", "backups", "queue", "cron", "jobs", "worker", "storage", "bucket", "s3", "photo", "photos", "image", "images", "video", "videos", "avatar", "file", "files", "terraform", "kubernetes", "cost"],
+      "triggers": ["hosting", "cloud", "aws", "gcp", "azure", "vercel", "cloudflare", "railway", "fly", "vps", "domain", "dns", "cdn", "ssl", "backup", "backups", "queue", "cron", "jobs", "worker", "storage", "bucket", "s3", "photo", "photos", "image", "images", "video", "videos", "avatar", "file", "files", "terraform", "kubernetes", "cost", "load balancer", "load balancing", "reverse proxy", "nginx", "caddy", "autoscaling", "helm", "service discovery", "serverless", "lambda", "multi-region", "infrastructure as code", "iac"],
       "implies": ["security"],
       "checklist": "infra.md",
-      "skills": ["shipping-and-launch"]
+      "skills": ["shipping-and-launch"],
+      "alsoConsider": ["engineering:system-design", "operations:runbook"]
     },
     {
       "id": "app-store",
